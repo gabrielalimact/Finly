@@ -1,18 +1,25 @@
-import React, { useState } from 'react';
-import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react'
+import {
+  Alert,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
+} from 'react-native'
 
 export default function Register() {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
 
   function handleRegister() {
     if (!name || !email || !password) {
-      Alert.alert('Erro', 'Preencha todos os campos.');
-      return;
+      Alert.alert('Erro', 'Preencha todos os campos.')
+      return
     }
     // Aqui poderia chamar API pra cadastrar usuário
-    Alert.alert('Cadastro', `Nome: ${name}\nEmail: ${email}`);
+    Alert.alert('Cadastro', `Nome: ${name}\nEmail: ${email}`)
   }
 
   return (
@@ -43,7 +50,7 @@ export default function Register() {
         <Text style={styles.buttonText}>Cadastrar</Text>
       </TouchableOpacity>
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -51,14 +58,14 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 16,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: '#F9FAFB'
   },
   title: {
     fontSize: 28,
     fontWeight: '600',
     marginBottom: 20,
     textAlign: 'center',
-    color: '#2E2E2E',
+    color: '#2E2E2E'
   },
   input: {
     height: 48,
@@ -68,18 +75,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     marginBottom: 16,
     fontSize: 16,
-    backgroundColor: '#FAFAFB',
+    backgroundColor: '#FAFAFB'
   },
   button: {
     backgroundColor: '#88C0A7',
     height: 48,
     borderRadius: 6,
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   buttonText: {
     color: '#FFFFFF',
     fontWeight: '600',
-    fontSize: 16,
-  },
-});
+    fontSize: 16
+  }
+})
