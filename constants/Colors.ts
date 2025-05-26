@@ -19,7 +19,7 @@ export const Colors = {
 
     border: '#E4E4E7',         
 
-    icon: '#687076',           
+    icon: '#393d40',           
     
     overlay: 'rgba(136, 192, 167, 0.1)', 
     shadow: 'rgba(46, 46, 46, 0.1)', 
