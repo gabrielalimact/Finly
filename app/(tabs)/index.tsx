@@ -1,8 +1,8 @@
 import { IconSymbol } from '@/components/ui/IconSymbol'
 import { Colors } from '@/constants/Colors'
+import MonthsFlatList from '@/src/modules/home/components/MonthsFlatList'
 import PieChartHome from '@/src/modules/home/components/PieChartHome'
 import {
-  FlatList,
   Image,
   ScrollView,
   StyleSheet,
@@ -21,20 +21,6 @@ export default function HomeScreen() {
     valorTotalDespesas: 300,
     valorTotalReceitas: 700
   }
-  const months = [
-    { key: '1', name: 'Janeiro' },
-    { key: '2', name: 'Fevereiro' },
-    { key: '3', name: 'Março' },
-    { key: '4', name: 'Abril' },
-    { key: '5', name: 'Maio' },
-    { key: '6', name: 'Junho' },
-    { key: '7', name: 'Julho' },
-    { key: '8', name: 'Agosto' },
-    { key: '9', name: 'Setembro' },
-    { key: '10', name: 'Outubro' },
-    { key: '11', name: 'Novembro' },
-    { key: '12', name: 'Dezembro' }
-  ]
 
   return (
     <SafeAreaView style={styles.container}>
@@ -63,19 +49,7 @@ export default function HomeScreen() {
           </View>
         </View>
         <View style={styles.content}>
-          <FlatList
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                style={{ marginRight: 16 }}
-                onPress={() => console.log(item.name)}
-              >
-                <Text style={styles.text}>{item.name.slice(0, 3)}</Text>
-              </TouchableOpacity>
-            )}
-            data={months}
-          />
+          <MonthsFlatList />
           <PieChartHome user={user} />
         </View>
       </ScrollView>
@@ -118,6 +92,6 @@ const styles = StyleSheet.create({
   },
 
   content: {
-    padding: 16
+    gap: 16
   }
 })
