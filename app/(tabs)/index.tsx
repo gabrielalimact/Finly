@@ -1,7 +1,11 @@
+import Divider from '@/components/Divider'
 import { IconSymbol } from '@/components/ui/IconSymbol'
 import { Colors } from '@/constants/Colors'
+import { mockUser } from '@/src/mocks/user'
 import MonthsFlatList from '@/src/modules/home/components/MonthsFlatList'
 import PieChartHome from '@/src/modules/home/components/PieChartHome'
+import { getAllBanks } from '@/src/services/brasilAPI'
+import { useEffect, useState } from 'react'
 import {
   Image,
   ScrollView,
@@ -11,24 +15,23 @@ import {
   View
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-
 const imagePeople = require('@/assets/images/people.png')
 
 export default function HomeScreen() {
-  const user = {
-    name: 'Gabriela',
-    saldo: 400,
-    valorTotalDespesas: 300,
-    valorTotalReceitas: 700
-  }
+  const [banks, setBanks] = useState([])
 
+  useEffect(() => {
+    getAllBanks().then((data) => {
+      console.log('Banks fetched:', data?.loadPages())
+    })
+  }, [])
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View style={styles.topBar}>
           <View style={styles.userInfosView}>
             <Image source={imagePeople} style={styles.userImage} />
-            <Text>Olá, {user.name}</Text>
+            <Text>Olá, {mockUser.name}</Text>
           </View>
 
           <View style={styles.iconsView}>
@@ -50,7 +53,8 @@ export default function HomeScreen() {
         </View>
         <View style={styles.content}>
           <MonthsFlatList />
-          <PieChartHome user={user} />
+          <PieChartHome user={mockUser} />
+          <Divider />
         </View>
       </ScrollView>
     </SafeAreaView>
