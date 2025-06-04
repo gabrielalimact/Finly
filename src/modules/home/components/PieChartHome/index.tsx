@@ -1,16 +1,12 @@
 import { Colors } from '@/constants/Colors'
+import { IUser } from '@/src/DTO/IUser'
 import { Text, View } from 'react-native'
 import Svg from 'react-native-svg'
 import { VictoryPie } from 'victory-native'
 import { styles } from './styles'
 
 type PieChartHomeProps = {
-  user: {
-    name: string
-    saldo: number
-    valorTotalReceitas: number
-    valorTotalDespesas: number
-  }
+  user: IUser
 }
 const PieChartHome = ({ user }: PieChartHomeProps) => {
   return (
