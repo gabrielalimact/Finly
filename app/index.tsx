@@ -5,16 +5,19 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 function App() {
   return (
     <View style={styles.container}>
-      <View style={styles.titleView}>
+      
+      <View style={styles.banner}>
         <Image
-          source={require('../assets/images/icon.png')}
-          style={styles.icon}
+          source={require('../assets/images/welcomebanner.png')}
+          style={styles.bannerImg}
         />
-        <Text style={styles.title}>Finly</Text>
       </View>
+      
       <Text style={styles.text}>
-        Controle suas finanças de forma simples e rápida
+        <Text style={styles.title}>Finly</Text>: Controle suas finanças de forma simples e rápida
+
       </Text>
+      
       <Text style={styles.caption}>
         Gerencie suas finanças pessoais com praticidade e tenha controle total
         sobre seus gastos e ganhos. Simplifique sua vida financeira com o Finly!
@@ -40,28 +43,39 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.bgPrimary,
     paddingVertical: 100
   },
-  text: {
-    fontSize: 50,
+  title: {
+    fontSize: 36,
     fontFamily: 'Montserrat-Bold',
-    lineHeight: 70
+    color: Colors.light.text
+  },
+  text: {
+    fontSize: 36,
+    fontFamily: 'Montserrat',
+    textAlign: 'justify',
+    marginTop: 20,
   },
   caption: {
     fontFamily: 'Montserrat-Regular',
     color: Colors.light.textSecondary,
     lineHeight: 20,
     textAlign: 'justify',
-    marginTop: 50
+    marginTop: 20,
+    fontSize: 16,
   },
-  title: {
-    fontSize: 24,
-    fontFamily: 'Montserrat',
-    color: Colors.light.text
-  },
-  titleView: {
-    flexDirection: 'row',
+  
+  banner: {
+    backgroundColor: Colors.light.primaryButtonBg,
+    justifyContent: 'center',
     alignItems: 'center',
-    gap: 10,
-    marginBottom: 50
+    marginBottom: 30,
+    borderRadius: 20,
+  },
+  bannerImg: {
+    width: '100%',
+    height: 280,
+    borderRadius: 20,
+    position: 'relative',
+    top: 20,
   },
   icon: {
     width: 40,

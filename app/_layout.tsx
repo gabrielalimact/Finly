@@ -18,7 +18,7 @@ export default function RootLayout() {
     'Montserrat-Light': require('../assets/fonts/Montserrat-Light.ttf')
   })
 
-  const isLogged = true
+  const isLogged = false
 
   useEffect(() => {
     if (loaded && isLogged) {
