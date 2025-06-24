@@ -1,11 +1,11 @@
-import { IconSymbol } from "@/components/ui/IconSymbol";
 import { Colors } from "@/constants/Colors";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useState } from "react";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
 import { styles } from "../styles";
 import { InputProps } from "../types";
 
-export const Input = ({label, placeholder, id} : InputProps) => {
+export const InputPassword = ({ label, id }: InputProps) => {
   const [data, setData] = useState("");
   const [inputFocused, setInputFocused] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -19,8 +19,7 @@ export const Input = ({label, placeholder, id} : InputProps) => {
       <TextInput
         style={[styles.input, inputFocused && styles.inputFocused]}
         placeholder="******"
-        keyboardType="default"
-        autoCapitalize="words"
+        id={id}
         value={data}
         onChangeText={setData}
         onFocus={() => setInputFocused(true)}
@@ -30,7 +29,7 @@ export const Input = ({label, placeholder, id} : InputProps) => {
       />
 
       <TouchableOpacity style={{ position: 'absolute', right: 12, top: 35 }} onPress={handleShowPassword}>
-        <IconSymbol name={showPassword ? 'eye.slash' : 'eye'} size={24} color={Colors.light.icon} />
+        <FontAwesome6 name={showPassword ? 'eye-slash' : 'eye'} size={24} color={Colors.light.icon} />
       </TouchableOpacity>
     </View>
   );

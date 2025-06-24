@@ -1,6 +1,6 @@
 import { Colors } from "@/constants/Colors";
+import FontAwesome6 from "@expo/vector-icons/MaterialIcons";
 import { TouchableOpacity } from "react-native";
-import { IconSymbol } from "../ui/IconSymbol";
 import { styles } from "./styles";
 
 type IconBackProps = {
@@ -12,12 +12,12 @@ const IconBack = ({
   size = 24,
   color = Colors.light.icon,
   onPress,
-}: IconBackProps ) => {
-return (
+}: IconBackProps) => {
+  return (
     <TouchableOpacity onPress={onPress}>
-      <IconSymbol size={size} name="arrow.backward" color={color}  style={styles.iconBack} />
-    </TouchableOpacity> 
-)
+      <FontAwesome6 size={size} name="arrow-left" color={color} style={styles.iconBack} />
+    </TouchableOpacity>
+  )
 }
 
 export default IconBack;

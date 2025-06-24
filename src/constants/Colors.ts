@@ -1,7 +1,7 @@
 export const Colors = {
   light: {
     tint: '#BDE4A7',
-    infoCardBg: '#F6F8F9',
+    infoCardBg: '#c2dbce',
     bgPrimary: '#F1F5F3',
     bgWhite: '#FAFAFB',
     bgGray: '#F9FAFB',

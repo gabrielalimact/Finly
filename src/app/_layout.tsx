@@ -1,15 +1,12 @@
 import { useFonts } from 'expo-font'
 import { Stack, useRouter } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
-import 'react-native-reanimated'
-
-import { useColorScheme } from '@/hooks/useColorScheme'
 import { useEffect } from 'react'
+import 'react-native-reanimated'
 import { SplashScreen } from './splash'
 
 export default function RootLayout() {
   const router = useRouter()
-  const colorScheme = useColorScheme()
   const [loaded] = useFonts({
     'Montserrat-Bold': require('../assets/fonts/Montserrat-Bold.ttf'),
     'Montserrat-Medium': require('../assets/fonts/Montserrat-Medium.ttf'),
