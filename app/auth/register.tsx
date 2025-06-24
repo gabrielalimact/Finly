@@ -1,92 +1,170 @@
+import IconBack from '@/components/IconBack/IconBack'
+import { InputPassword } from '@/components/Inputs/InputPassword'
+import { Colors } from '@/constants/Colors'
+import { useRouter } from 'expo-router'
 import React, { useState } from 'react'
 import {
-  Alert,
+  Image,
+  Keyboard,
+  KeyboardAvoidingView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View
 } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 export default function Register() {
+  const router = useRouter()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [nameFocused, setNameFocused] = useState(false)
+  const [emailFocused, setEmailFocused] = useState(false)
+  const [passwordFocused, setPasswordFocused] = useState(false)
 
-  function handleRegister() {
-    if (!name || !email || !password) {
-      Alert.alert('Erro', 'Preencha todos os campos.')
-      return
-    }
-    // Aqui poderia chamar API pra cadastrar usuário
-    Alert.alert('Cadastro', `Nome: ${name}\nEmail: ${email}`)
+  function hanldeRegister() {
+    router.replace('/(tabs)')
+
+    // if (!email || !password) {
+    //   Alert.alert('Erro', 'Por favor, preencha todos os campos.');
+    //   return;
+    // }
+    // else {
+    // }
+  }
+
+  function handleGoBack() {
+    router.back()
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Cadastro</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Nome"
-        value={name}
-        onChangeText={setName}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        keyboardType="email-address"
-        autoCapitalize="none"
-        value={email}
-        onChangeText={setEmail}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Senha"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-      />
-      <TouchableOpacity style={styles.button} onPress={handleRegister}>
-        <Text style={styles.buttonText}>Cadastrar</Text>
-      </TouchableOpacity>
-    </View>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <SafeAreaView style={styles.container}>
+        <KeyboardAvoidingView behavior="height" style={{ flex: 1 }}>
+          <IconBack onPress={handleGoBack} />
+          <View style={{ flex: 1, justifyContent: 'center', marginBottom: 40 }}>
+            <View style={{ marginBottom: 40 }}>
+              <View style={{flexDirection: 'row', alignItems: 'center', marginVertical: 20, gap: 10}}>
+                <Image
+                source={require('../../assets/images/icon.png')}
+                style={{
+                  width: 50,
+                  height: 50,
+                }}
+              />
+              <Text style={styles.title}>Cadastro</Text>
+              </View>
+              
+              <Text style={styles.subtitle}>
+                Cadastre-se e explore todas as ferramentas para assumir o controle das suas finanças.
+              </Text>
+            </View>
+
+            <View>
+              <View>
+                <View style={styles.viewInput}>
+                  <Text style={styles.labelInput}>Nome</Text>
+                  <TextInput
+                    style={[styles.input, nameFocused && styles.inputFocused]}
+                    placeholder="Seu nome aqui"
+                    keyboardType="default"
+                    autoCapitalize="words"
+                    value={name}
+                    onChangeText={setName}
+                    onFocus={() => setNameFocused(true)}
+                    onBlur={() => setNameFocused(false)}
+                  />
+                </View>
+                <View style={styles.viewInput}>
+                  <Text style={styles.labelInput}>Email</Text>
+                  <TextInput
+                    style={[styles.input, emailFocused && styles.inputFocused]}
+                    placeholder="exemplo@email.com"
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    value={email}
+                    onChangeText={setEmail}
+                    onFocus={() => setEmailFocused(true)}
+                    onBlur={() => setEmailFocused(false)}
+                  />
+                </View>
+
+                
+              </View>
+              <InputPassword label='Senha' id='password-input'/>
+              <TouchableOpacity style={styles.button} onPress={hanldeRegister}>
+                <Text style={styles.buttonText}>Concluir</Text>
+              </TouchableOpacity>
+            </View>
+
+          </View>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     padding: 16,
-    backgroundColor: '#F9FAFB'
+    backgroundColor: Colors.light.bgWhite
+  },
+  iconText: {
+    fontSize: 24,
+    fontFamily: 'Montserrat-Bold',
   },
   title: {
-    fontSize: 28,
-    fontWeight: '600',
-    marginBottom: 20,
-    textAlign: 'center',
+    fontSize: 40,
+    fontFamily: 'Montserrat-Bold',
     color: '#2E2E2E'
+  },
+  subtitle: {
+    fontSize: 16,
+    fontFamily: 'Montserrat-Regular',
+    color: '#2E2E2E'
+  },
+  viewInput: {
+    gap: 8
+  },
+  labelInput: {
+    fontFamily: 'Montserrat-Regular',
+    fontSize: 12,
+    marginHorizontal: 8
   },
   input: {
     height: 48,
-    borderColor: '#E4E4E7',
+    borderColor: Colors.light.border,
     borderWidth: 1,
-    borderRadius: 6,
+    borderRadius: 16,
     paddingHorizontal: 12,
-    marginBottom: 16,
-    fontSize: 16,
-    backgroundColor: '#FAFAFB'
+    marginBottom: 20,
+    fontSize: 16
+  },
+  inputFocused: {
+    borderColor: Colors.light.positiveBg,
+    borderWidth: 2
   },
   button: {
-    backgroundColor: '#88C0A7',
-    height: 48,
-    borderRadius: 6,
+    backgroundColor: Colors.light.primaryButtonBg,
+    height: 40,
+    borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center'
   },
   buttonText: {
-    color: '#FFFFFF',
-    fontWeight: '600',
+    fontFamily: 'Montserrat-SemiBold',
     fontSize: 16
+  },
+  registerText: {
+    fontFamily: 'Montserrat-SemiBold',
+    fontSize: 16,
+    marginVertical: 20,
+    textAlign: 'center',
+    color: '#2E2E2E'
   }
 })
