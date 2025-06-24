@@ -3,6 +3,7 @@ import { Colors } from '@/constants/Colors'
 import { useRouter } from 'expo-router'
 import React, { useState } from 'react'
 import {
+  Image,
   Keyboard,
   KeyboardAvoidingView,
   StyleSheet,
@@ -22,7 +23,7 @@ export default function Login() {
   const [passwordFocused, setPasswordFocused] = useState(false)
 
   function handleLogin() {
-    router.push('/(tabs)')
+    router.replace('/(tabs)')
 
     // if (!email || !password) {
     //   Alert.alert('Erro', 'Por favor, preencha todos os campos.');
@@ -43,7 +44,17 @@ export default function Login() {
           <IconBack onPress={handleGoBack} />
           <View style={{ flex: 1, justifyContent: 'center', marginBottom: 40 }}>
             <View style={{ marginBottom: 40 }}>
+              <View style={{flexDirection: 'row', alignItems: 'center', marginVertical: 20, gap: 10}}>
+                <Image
+                source={require('../../assets/images/icon.png')}
+                style={{
+                  width: 50,
+                  height: 50,
+                }}
+              />
               <Text style={styles.title}>Login</Text>
+              </View>
+              
               <Text style={styles.subtitle}>
                 Pronto para assumir o controle das suas finanças?
               </Text>
@@ -104,12 +115,13 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: Colors.light.bgWhite
   },
-
+  iconText: {
+    fontSize: 24,
+    fontFamily: 'Montserrat-Bold',
+  },
   title: {
     fontSize: 40,
     fontFamily: 'Montserrat-Bold',
-    marginTop: 40,
-    marginBottom: 20,
     color: '#2E2E2E'
   },
   subtitle: {
