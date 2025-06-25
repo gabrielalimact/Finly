@@ -4,7 +4,7 @@ import { StyleProp, Text, TextStyle } from "react-native";
 export type TextStyledProps = {
   text: string;
   size?: number;
-  fontWeight?: "normal" | "bold" | "light";
+  fontWeight?: "normal" | "bold" | "light" | "medium";
   color?: string;
   style?: StyleProp<TextStyle>;
   type?: "text" | "title" | "subtitle" | "caption";
@@ -21,7 +21,7 @@ export const TextStyled = ({
   return (
     <Text style={[{
       fontFamily: fontWeight === "bold" ? "Montserrat-Bold" :
-        fontWeight === "light" ? "Montserrat-Light" : "Montserrat-Regular",
+        fontWeight === "light" ? "Montserrat-Light" : fontWeight === "medium" ? "Montserrat-Semibold" : "Montserrat-Regular",
       fontSize: type === "title" ? size * 1.5 :
         type === "subtitle" ? size * 1.2 : type === 'caption' ? 12 : size,
       color: color,
