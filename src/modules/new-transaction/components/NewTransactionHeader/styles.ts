@@ -19,7 +19,7 @@ export const styles = StyleSheet.create({
   },
   headerInput: {
     paddingHorizontal: 20,
-    marginBottom: 20,
+    marginBottom: 60,
     alignItems: "flex-end",
   },
   amountInput: {
