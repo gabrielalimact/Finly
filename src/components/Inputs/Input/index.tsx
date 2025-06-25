@@ -11,8 +11,12 @@ export const Input = ({ label, placeholder, id, keyboardType, style, type }: Inp
     : data;
 
   const handleChange = (value: string) => {
-    const cleaned = value.replace(/[^\d,]/g, "");
-    setData(cleaned);
+    if (type === "money") {
+      const cleaned = value.replace(/[^\d,]/g, "");
+      setData(cleaned);
+    } else {
+      setData(value);
+    }
   };
 
   return (
@@ -24,7 +28,7 @@ export const Input = ({ label, placeholder, id, keyboardType, style, type }: Inp
         keyboardType={keyboardType || "default"}
         autoCapitalize="words"
         value={formattedValue}
-        onChangeText={handleChange}
+        onChangeText={(value) => handleChange(value)}
         onFocus={() => setInputFocused(true)}
         onBlur={() => setInputFocused(false)}
       />
