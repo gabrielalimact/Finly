@@ -6,6 +6,7 @@ import {
   Image,
   Keyboard,
   KeyboardAvoidingView,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -41,67 +42,69 @@ export default function Login() {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <SafeAreaView style={styles.container}>
         <KeyboardAvoidingView behavior="height" style={{ flex: 1 }}>
-          <IconBack onPress={handleGoBack} />
-          <View style={{ flex: 1, justifyContent: 'center', marginBottom: 40 }}>
-            <View style={{ marginBottom: 40 }}>
-              <View style={{flexDirection: 'row', alignItems: 'center', marginVertical: 20, gap: 10}}>
-                <Image
-                source={require('../../assets/images/icon.png')}
-                style={{
-                  width: 50,
-                  height: 50,
-                }}
-              />
-              <Text style={styles.title}>Login</Text>
-              </View>
-              
-              <Text style={styles.subtitle}>
-                Pronto para assumir o controle das suas finanças?
-              </Text>
-            </View>
+          <ScrollView contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
+            <IconBack onPress={handleGoBack} />
+            <View style={{ flex: 1, justifyContent: 'center', marginBottom: 40 }}>
+              <View style={{ marginBottom: 40 }}>
+                <View style={{ alignItems: 'center', gap: 10 }}>
+                  <Image
+                    source={require('../../assets/images/img3.png')}
+                    style={{
+                      width: 180,
+                      height: 180,
+                    }}
+                  />
+                  <Text style={styles.title}>Login</Text>
+                </View>
 
-            <View>
+                <Text style={styles.subtitle}>
+                  Pronto para assumir o controle das suas finanças?
+                </Text>
+              </View>
+
               <View>
-                <View style={styles.viewInput}>
-                  <Text style={styles.labelInput}>Email</Text>
-                  <TextInput
-                    style={[styles.input, emailFocused && styles.inputFocused]}
-                    placeholder="exemplo@email.com"
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                    value={email}
-                    onChangeText={setEmail}
-                    onFocus={() => setEmailFocused(true)}
-                    onBlur={() => setEmailFocused(false)}
-                  />
-                </View>
+                <View>
+                  <View style={styles.viewInput}>
+                    <Text style={styles.labelInput}>Email</Text>
+                    <TextInput
+                      style={[styles.input, emailFocused && styles.inputFocused]}
+                      placeholder="exemplo@email.com"
+                      keyboardType="email-address"
+                      autoCapitalize="none"
+                      value={email}
+                      onChangeText={setEmail}
+                      onFocus={() => setEmailFocused(true)}
+                      onBlur={() => setEmailFocused(false)}
+                    />
+                  </View>
 
-                <View style={styles.viewInput}>
-                  <Text style={styles.labelInput}>Senha</Text>
-                  <TextInput
-                    style={[
-                      styles.input,
-                      passwordFocused && styles.inputFocused
-                    ]}
-                    placeholder="******"
-                    secureTextEntry
-                    value={password}
-                    onChangeText={setPassword}
-                    onFocus={() => setPasswordFocused(true)}
-                    onBlur={() => setPasswordFocused(false)}
-                  />
+                  <View style={styles.viewInput}>
+                    <Text style={styles.labelInput}>Senha</Text>
+                    <TextInput
+                      style={[
+                        styles.input,
+                        passwordFocused && styles.inputFocused
+                      ]}
+                      placeholder="******"
+                      secureTextEntry
+                      value={password}
+                      onChangeText={setPassword}
+                      onFocus={() => setPasswordFocused(true)}
+                      onBlur={() => setPasswordFocused(false)}
+                    />
+                  </View>
                 </View>
+                <TouchableOpacity style={styles.button} onPress={handleLogin}>
+                  <Text style={styles.buttonText}>Entrar</Text>
+                </TouchableOpacity>
               </View>
-              <TouchableOpacity style={styles.button} onPress={handleLogin}>
-                <Text style={styles.buttonText}>Entrar</Text>
+              <TouchableOpacity onPress={() => router.push('/auth/register')}>
+                <Text style={styles.registerText}>
+                  Não tem uma conta? Cadastre-se
+                </Text>
               </TouchableOpacity>
             </View>
-            <TouchableOpacity onPress={() => router.push('/auth/register')}>
-              <Text style={styles.registerText}>
-                Não tem uma conta? Cadastre-se
-              </Text>
-            </TouchableOpacity>
-          </View>
+          </ScrollView>
         </KeyboardAvoidingView>
       </SafeAreaView>
     </TouchableWithoutFeedback>
@@ -111,8 +114,8 @@ export default function Login() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 20,
     justifyContent: 'space-between',
-    padding: 16,
     backgroundColor: Colors.light.bgWhite
   },
   iconText: {
