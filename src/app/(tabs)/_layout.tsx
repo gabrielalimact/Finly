@@ -1,7 +1,6 @@
 import { Tabs } from 'expo-router'
 import React from 'react'
 
-import TabBarBackground from '@/components/ui/TabBarBackground'
 import { Colors } from '@/constants/Colors'
 import { AntDesign } from '@expo/vector-icons'
 
@@ -12,22 +11,7 @@ export default function TabLayout() {
       screenOptions={{
         headerShown: false,
         tabBarShowLabel: false,
-        tabBarActiveTintColor: Colors.light.icon,
-        tabBarBackground: TabBarBackground,
-        tabBarStyle: {
-          position: 'absolute',
-          bottom: 16,
-          marginHorizontal: 30,
-          height: 64,
-          borderRadius: 30,
-          backgroundColor: Colors.light.tint,
-          shadowColor: 'black',
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 1,
-          shadowRadius: 8,
-          elevation: 8,
-          overflow: 'hidden',
-        },
+        tabBarActiveTintColor: Colors.light.tint,
         tabBarIconStyle: {
           marginTop: 10,
         },
