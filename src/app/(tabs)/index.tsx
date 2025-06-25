@@ -1,4 +1,5 @@
 import { Card } from '@/components/Card';
+import { TextStyled } from '@/components/TextStyled';
 import { Colors } from '@/constants/Colors';
 import { mockUser } from '@/mocks/user';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
@@ -6,7 +7,6 @@ import { useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View
 } from 'react-native';
@@ -29,7 +29,15 @@ export default function HomeScreen() {
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} >
         <View style={styles.topBar}>
           <View style={styles.userInfosView}>
-            <Text style={[styles.text, styles.titleText]}>Olá, <Text style={styles.textBold}>{(mockUser.name).split(' ')[0]}</Text>!</Text>
+            <TextStyled
+              text="Olá,"
+              type='subtitle'
+            />
+            <TextStyled
+              text={mockUser.name.split(' ')[0] + '!'}
+              type='title'
+              fontWeight="bold"
+            />
           </View>
 
           <View style={styles.iconsView}>
@@ -53,10 +61,10 @@ export default function HomeScreen() {
                 flexDirection: 'row',
                 justifyContent: 'space-between',
               }}>
-                <Text style={styles.text}>Saldo</Text>
-                <Text style={styles.caption}>{date}</Text>
+                <TextStyled text='Saldo' />
+                <TextStyled text={date} type='caption' />
               </View>
-              <Text style={styles.biggerText}>R$ 2000,00</Text>
+              <TextStyled type='title' fontWeight='bold' text='R$ 2000,00' />
             </View>
           </Card>
         </View>
@@ -70,7 +78,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.light.bgPrimary,
     padding: 20
-
   },
   topBar: {
     flexDirection: 'row',
@@ -105,29 +112,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50
   },
-  text: {
-    fontFamily: 'Montserrat-Regular',
-  },
-  caption: {
-    fontFamily: 'Montserrat-Regular',
-    color: Colors.light.textSecondary,
-    fontSize: 12,
-  },
-  titleText: {
-    fontSize: 20,
-    textShadowColor: Colors.light.shadow,
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 2
-  },
-  textBold: {
-    fontFamily: 'Montserrat-Bold',
-  },
   content: {
     gap: 16
   },
-  biggerText: {
-    fontSize: 24,
-    fontFamily: 'Montserrat-Bold',
-    color: Colors.light.text,
-  }
 })
