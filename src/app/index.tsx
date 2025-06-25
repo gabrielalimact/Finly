@@ -5,19 +5,19 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 function App() {
   return (
     <View style={styles.container}>
-      
+
       <View style={styles.banner}>
         <Image
           source={require('../assets/images/welcomebanner.png')}
           style={styles.bannerImg}
         />
       </View>
-      
+
       <Text style={styles.text}>
         <Text style={styles.title}>Finly</Text>: Controle suas finanças de forma simples e rápida
 
       </Text>
-      
+
       <Text style={styles.caption}>
         Gerencie suas finanças pessoais com praticidade e tenha controle total
         sobre seus gastos e ganhos. Simplifique sua vida financeira com o Finly!
@@ -29,7 +29,7 @@ function App() {
           router.push('/auth/login')
         }}
       >
-        <Text style={styles.textButton}>Faça o login</Text>
+        <Text style={styles.textButton}>Faça o login ou cadastre-se</Text>
       </TouchableOpacity>
     </View>
   )
@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     fontSize: 16,
   },
-  
+
   banner: {
     backgroundColor: Colors.light.primaryButtonBg,
     justifyContent: 'center',
