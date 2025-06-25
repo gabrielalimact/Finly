@@ -1,0 +1,178 @@
+import IconBack from '@/components/IconBack/IconBack'
+import { InputPassword } from '@/components/Inputs/InputPassword'
+import { Colors } from '@/constants/Colors'
+import { useRouter } from 'expo-router'
+import React, { useState } from 'react'
+import {
+  Image,
+  Keyboard,
+  KeyboardAvoidingView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View
+} from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
+
+export default function Register() {
+  const router = useRouter()
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [nameFocused, setNameFocused] = useState(false)
+  const [emailFocused, setEmailFocused] = useState(false)
+  const [passwordFocused, setPasswordFocused] = useState(false)
+
+  function hanldeRegister() {
+    router.replace('/(tabs)')
+
+    // if (!email || !password) {
+    //   Alert.alert('Erro', 'Por favor, preencha todos os campos.');
+    //   return;
+    // }
+    // else {
+    // }
+  }
+
+  function handleGoBack() {
+    router.back()
+  }
+
+  return (
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <SafeAreaView style={styles.container}>
+        <KeyboardAvoidingView behavior="height" style={{ flex: 1 }}>
+          <ScrollView contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
+            <IconBack onPress={handleGoBack} />
+            <View style={{ flex: 1, justifyContent: 'center' }}>
+              <View style={{ marginBottom: 40 }}>
+                <View style={{ alignItems: 'center', gap: 10, }}>
+                  <Image
+                    source={require('../../assets/images/img1.png')}
+                    style={{
+                      width: 180,
+                      height: 180,
+                    }}
+                  />
+                  <Text style={styles.title}>Cadastro</Text>
+                </View>
+
+                <Text style={styles.subtitle}>
+                  Cadastre-se e explore todas as ferramentas para assumir o controle das suas finanças.
+                </Text>
+              </View>
+
+              <View>
+                <View>
+                  <View style={styles.viewInput}>
+                    <Text style={styles.labelInput}>Nome</Text>
+                    <TextInput
+                      style={[styles.input, nameFocused && styles.inputFocused]}
+                      placeholder="Seu nome aqui"
+                      keyboardType="default"
+                      autoCapitalize="words"
+                      value={name}
+                      onChangeText={setName}
+                      onFocus={() => setNameFocused(true)}
+                      onBlur={() => setNameFocused(false)}
+                    />
+                  </View>
+                  <View style={styles.viewInput}>
+                    <Text style={styles.labelInput}>Email</Text>
+                    <TextInput
+                      style={[styles.input, emailFocused && styles.inputFocused]}
+                      placeholder="exemplo@email.com"
+                      keyboardType="email-address"
+                      autoCapitalize="none"
+                      value={email}
+                      onChangeText={setEmail}
+                      onFocus={() => setEmailFocused(true)}
+                      onBlur={() => setEmailFocused(false)}
+                    />
+                  </View>
+
+
+                </View>
+                <InputPassword label='Senha' id='password-input' />
+                <TouchableOpacity style={styles.button} onPress={hanldeRegister}>
+                  <Text style={styles.buttonText}>Concluir</Text>
+                </TouchableOpacity>
+              </View>
+
+              <TouchableOpacity onPress={() => router.push('/auth/login')}>
+                <Text style={styles.registerText}>
+                  Já tem uma conta? Faça login
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
+  )
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    backgroundColor: Colors.light.bgWhite
+  },
+  iconText: {
+    fontSize: 24,
+    fontFamily: 'Montserrat-Bold',
+  },
+  title: {
+    fontSize: 40,
+    fontFamily: 'Montserrat-Bold',
+    color: '#2E2E2E'
+  },
+  subtitle: {
+    fontSize: 16,
+    fontFamily: 'Montserrat-Regular',
+    color: '#2E2E2E'
+  },
+  viewInput: {
+    gap: 8
+  },
+  labelInput: {
+    fontFamily: 'Montserrat-Regular',
+    fontSize: 12,
+    marginHorizontal: 8
+  },
+  input: {
+    height: 48,
+    borderColor: Colors.light.border,
+    borderWidth: 1,
+    borderRadius: 16,
+    paddingHorizontal: 12,
+    marginBottom: 20,
+    fontSize: 16
+  },
+  inputFocused: {
+    borderColor: Colors.light.positiveBg,
+    borderWidth: 2
+  },
+  button: {
+    backgroundColor: Colors.light.primaryButtonBg,
+    height: 40,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  buttonText: {
+    fontFamily: 'Montserrat-SemiBold',
+    fontSize: 16
+  },
+  registerText: {
+    fontFamily: 'Montserrat-SemiBold',
+    fontSize: 16,
+    marginVertical: 20,
+    textAlign: 'center',
+    color: '#2E2E2E'
+  }
+})
