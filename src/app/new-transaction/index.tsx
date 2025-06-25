@@ -1,7 +1,7 @@
 import { NewTransactionHeader, TransactionTypeModal } from "@/modules/new-transaction/components";
 import { styles } from "@/modules/new-transaction/components/styles";
 import { router } from "expo-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Keyboard, TouchableWithoutFeedback, View } from "react-native";
 
 
@@ -10,9 +10,6 @@ export default function NewTransactionScreen() {
     "income"
   );
   const [openSelectType, setOpenSelectType] = useState(false);
-  useEffect(() => {
-    console.log("Selected type changed:", selectedType);
-  }, [selectedType]);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
