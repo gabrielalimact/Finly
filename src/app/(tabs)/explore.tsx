@@ -4,7 +4,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 export default function TabTwoScreen() {
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => router.replace('/')}><Text>Fazer logout</Text></TouchableOpacity>
+      <TouchableOpacity onPress={() => router.replace('/auth/login')}><Text>Fazer logout</Text></TouchableOpacity>
     </View>
   )
 }
