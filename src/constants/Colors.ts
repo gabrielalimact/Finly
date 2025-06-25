@@ -20,8 +20,11 @@ export const Colors = {
     border: '#E4E4E7',
 
     icon: '#393d40',
+    iconGreen: '#2F855A',
 
     overlay: 'rgba(136, 192, 167, 0.1)',
-    shadow: 'rgba(46, 46, 46, 0.1)'
+    shadow: 'rgba(46, 46, 46, 0.1)',
+
+    neonGreen: '#39FF14'
   }
 }
