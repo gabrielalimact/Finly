@@ -8,7 +8,7 @@ export const Colors = {
     primaryButtonBg: '#B2F5BF',
     secondaryButtonBg: '#FCD8F6',
     positiveBg: '#a9d797',
-    negativeBg: '#ea5827',
+    negativeBg: '#db653e',
     warningBg: '#FFD66E',
 
     text: '#1A1A1A',
