@@ -7,6 +7,7 @@ import {
   Image,
   Keyboard,
   KeyboardAvoidingView,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -44,63 +45,70 @@ export default function Register() {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <SafeAreaView style={styles.container}>
         <KeyboardAvoidingView behavior="height" style={{ flex: 1 }}>
-          <IconBack onPress={handleGoBack} />
-          <View style={{ flex: 1, justifyContent: 'center', marginBottom: 40 }}>
-            <View style={{ marginBottom: 40 }}>
-              <View style={{flexDirection: 'row', alignItems: 'center', marginVertical: 20, gap: 10}}>
-                <Image
-                source={require('../../assets/images/icon.png')}
-                style={{
-                  width: 50,
-                  height: 50,
-                }}
-              />
-              <Text style={styles.title}>Cadastro</Text>
-              </View>
-              
-              <Text style={styles.subtitle}>
-                Cadastre-se e explore todas as ferramentas para assumir o controle das suas finanças.
-              </Text>
-            </View>
+          <ScrollView contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
+            <IconBack onPress={handleGoBack} />
+            <View style={{ flex: 1, justifyContent: 'center' }}>
+              <View style={{ marginBottom: 40 }}>
+                <View style={{ alignItems: 'center', gap: 10, }}>
+                  <Image
+                    source={require('../../assets/images/img1.png')}
+                    style={{
+                      width: 180,
+                      height: 180,
+                    }}
+                  />
+                  <Text style={styles.title}>Cadastro</Text>
+                </View>
 
-            <View>
+                <Text style={styles.subtitle}>
+                  Cadastre-se e explore todas as ferramentas para assumir o controle das suas finanças.
+                </Text>
+              </View>
+
               <View>
-                <View style={styles.viewInput}>
-                  <Text style={styles.labelInput}>Nome</Text>
-                  <TextInput
-                    style={[styles.input, nameFocused && styles.inputFocused]}
-                    placeholder="Seu nome aqui"
-                    keyboardType="default"
-                    autoCapitalize="words"
-                    value={name}
-                    onChangeText={setName}
-                    onFocus={() => setNameFocused(true)}
-                    onBlur={() => setNameFocused(false)}
-                  />
-                </View>
-                <View style={styles.viewInput}>
-                  <Text style={styles.labelInput}>Email</Text>
-                  <TextInput
-                    style={[styles.input, emailFocused && styles.inputFocused]}
-                    placeholder="exemplo@email.com"
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                    value={email}
-                    onChangeText={setEmail}
-                    onFocus={() => setEmailFocused(true)}
-                    onBlur={() => setEmailFocused(false)}
-                  />
-                </View>
+                <View>
+                  <View style={styles.viewInput}>
+                    <Text style={styles.labelInput}>Nome</Text>
+                    <TextInput
+                      style={[styles.input, nameFocused && styles.inputFocused]}
+                      placeholder="Seu nome aqui"
+                      keyboardType="default"
+                      autoCapitalize="words"
+                      value={name}
+                      onChangeText={setName}
+                      onFocus={() => setNameFocused(true)}
+                      onBlur={() => setNameFocused(false)}
+                    />
+                  </View>
+                  <View style={styles.viewInput}>
+                    <Text style={styles.labelInput}>Email</Text>
+                    <TextInput
+                      style={[styles.input, emailFocused && styles.inputFocused]}
+                      placeholder="exemplo@email.com"
+                      keyboardType="email-address"
+                      autoCapitalize="none"
+                      value={email}
+                      onChangeText={setEmail}
+                      onFocus={() => setEmailFocused(true)}
+                      onBlur={() => setEmailFocused(false)}
+                    />
+                  </View>
 
-                
+
+                </View>
+                <InputPassword label='Senha' id='password-input' />
+                <TouchableOpacity style={styles.button} onPress={hanldeRegister}>
+                  <Text style={styles.buttonText}>Concluir</Text>
+                </TouchableOpacity>
               </View>
-              <InputPassword label='Senha' id='password-input'/>
-              <TouchableOpacity style={styles.button} onPress={hanldeRegister}>
-                <Text style={styles.buttonText}>Concluir</Text>
+
+              <TouchableOpacity onPress={() => router.push('/auth/login')}>
+                <Text style={styles.registerText}>
+                  Já tem uma conta? Faça login
+                </Text>
               </TouchableOpacity>
             </View>
-
-          </View>
+          </ScrollView>
         </KeyboardAvoidingView>
       </SafeAreaView>
     </TouchableWithoutFeedback>
@@ -111,7 +119,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'space-between',
-    padding: 16,
+    paddingHorizontal: 20,
     backgroundColor: Colors.light.bgWhite
   },
   iconText: {
