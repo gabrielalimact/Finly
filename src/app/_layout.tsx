@@ -41,6 +41,9 @@ export default function RootLayout() {
           name="auth"
         />
         <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="new-transaction/index" options={{
+          presentation: 'modal',
+        }} />
         <Stack.Screen name="+not-found" />
         <Stack.Screen
           name="splash"
