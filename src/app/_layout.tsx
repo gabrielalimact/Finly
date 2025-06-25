@@ -30,7 +30,7 @@ export default function RootLayout() {
 
   return (
     <>
-      <Stack>
+      <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen
           name="index"
           options={{
@@ -39,11 +39,8 @@ export default function RootLayout() {
         />
         <Stack.Screen
           name="auth"
-          options={{
-            headerShown: false
-          }}
         />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="(tabs)" />
         <Stack.Screen name="+not-found" />
         <Stack.Screen
           name="splash"
