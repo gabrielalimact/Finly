@@ -12,9 +12,25 @@ module.exports = defineConfig([
     },
     rules: {
       'prettier/prettier': 'error',
-      semi: ['error', 'never'], // remover ponto e vírgula
-      'no-trailing-spaces': 'error', // remover espaços em branco ao final da linha
-      indent: ['error', 2] // tabulação de 2 espaços
+      semi: ['error', 'never'],
+      'no-trailing-spaces': 'error',
+      indent: ['error', 2],
+      'space-in-parens': ['error', 'never', { exceptions: ['empty'] }],
+      'array-bracket-spacing': [
+        'error',
+        'never',
+        {
+          singleValue: false,
+          objectsInArrays: false,
+          arraysInArrays: false,
+          empty: 'always'
+        }
+      ],
+      'object-curly-spacing': [
+        'error',
+        'never',
+        { objectsInObjects: false, arraysInObjects: false, empty: 'always' }
+      ]
     }
   }
 ])
