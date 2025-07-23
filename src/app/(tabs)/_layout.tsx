@@ -1,5 +1,5 @@
 import { Colors } from "@/constants/Colors"
-import { AntDesign } from "@expo/vector-icons"
+import { AntDesign, FontAwesome, FontAwesome6, Ionicons } from "@expo/vector-icons"
 import { router, Tabs } from "expo-router"
 import { StyleSheet, TouchableOpacity, View } from "react-native"
 
@@ -12,6 +12,9 @@ export default function TabLayout() {
           tabBarShowLabel: false,
           tabBarActiveTintColor: Colors.light.tint,
           tabBarIconStyle: { marginTop: 10 },
+          tabBarStyle: {
+            paddingHorizontal: 20,
+          },
         }}
       >
         <Tabs.Screen
@@ -24,12 +27,35 @@ export default function TabLayout() {
           }}
         />
 
+        
         <Tabs.Screen
-          name="explore"
+          name="accounts"
+          options={{
+            title: "Contas e Cartões",
+            tabBarItemStyle: { marginRight: 30 },
+            tabBarIcon: ({ color }) => (
+              <AntDesign size={28} name="creditcard" color={color} />
+            ),
+          }}
+        />
+
+        <Tabs.Screen
+          name="reports"
+          options={{
+            title: "Relatórios",
+            tabBarItemStyle: { marginLeft: 30 },
+            tabBarIcon: ({ color }) => (
+              <Ionicons name="stats-chart" size={24} color={color} />
+            ),
+          }}
+        />
+
+        <Tabs.Screen
+          name="profile"
           options={{
             title: "Perfil",
             tabBarIcon: ({ color }) => (
-              <AntDesign size={28} name="user" color={color} />
+              <FontAwesome name="user-o" size={24} color={color} />
             ),
           }}
         />
@@ -40,7 +66,7 @@ export default function TabLayout() {
         style={styles.floatingButton}
         onPress={() => router.push("/new-transaction")}
       >
-        <AntDesign size={28} name="plus" color="#fff" />
+        <FontAwesome6 size={30} name="plus" color="#fff"  />
       </TouchableOpacity>
     </View>
   )
@@ -53,10 +79,8 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     backgroundColor: Colors.light.tint,
     borderRadius: 999,
-    borderWidth: 3,
     height: 60,
     width: 60,
-    borderColor: "white",
     alignItems: "center",
     justifyContent: "center",
     shadowColor: "#000",
