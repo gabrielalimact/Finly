@@ -1,20 +1,16 @@
-import { LinearGradient } from "expo-linear-gradient"
+import { View, ViewStyle } from "react-native"
 import { styles } from "./styles"
 type CardProps = {
   children?: React.ReactNode
-  style?: React.CSSProperties
+  style?: ViewStyle
 }
 export const Card = (
-  { children }: CardProps
+  { children, style }: CardProps
+
 ) => {
   return (
-    <LinearGradient
-      colors={['#ffffff', 'rgba(87,199,133,1)']}
-      start={{ x: 1.5, y: 1 }}
-      end={{ x: 0.4, y: 0.5 }}
-      style={styles.cardContainer}
-    >
+    <View style={[styles.cardContainer, style]}>
       {children}
-    </LinearGradient >
+    </View>
   )
 }
