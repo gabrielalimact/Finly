@@ -1,10 +1,9 @@
 import { Colors } from '@/constants/Colors'
-import { router } from 'expo-router'
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 export default function TabTwoScreen() {
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => router.replace('/auth/login')}><Text>Fazer logout</Text></TouchableOpacity>
+      <Text>CONTAS E CARTÕES</Text>
     </View>
   )
 }
