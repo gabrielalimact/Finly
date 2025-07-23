@@ -75,9 +75,15 @@ export default function HomeScreen() {
               <FontAwesome5 name="dollar-sign" size={24} color={Colors.light.icon} />
             </View>
             <View style={styles.cardTexts}>
+              <View style={styles.cardRow}>
               <TextStyled
-                text={"Saldo do mês " + date.split('/')[1] + "/" + date.split('/')[2]}
+                text="Saldo em"
               />
+              <TextStyled
+                text={ date.split('/')[1] + "/" + date.split('/')[2]}
+                fontWeight='bold'
+              />
+              </View>
               <TextStyled
                 text={eyeOpen ? 'R$ 10.000,00' : 'R$ ****,**'}
                 fontWeight='bold'
@@ -141,7 +147,14 @@ const styles = StyleSheet.create({
   },
   cardTexts: {
     flexDirection: 'row',
+    flex: 1,
+    alignItems: 'center',
     justifyContent: 'space-between',
     gap: 8,
   },
+  cardRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  }
 });
