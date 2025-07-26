@@ -1,5 +1,5 @@
 import { Card } from '@/components/Card';
-import Divider from '@/components/Divider';
+import { MonthsList } from '@/components/MonthsList';
 import { TextStyled } from '@/components/TextStyled';
 import { Colors } from '@/constants/Colors';
 import { mockUser } from '@/mocks/user';
@@ -54,8 +54,7 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        <Divider />
-
+        <MonthsList year={2025} />
         <View style={styles.content}>
           <View style={styles.balanceView}>
             <CardsBalance
