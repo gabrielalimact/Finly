@@ -10,23 +10,41 @@ export type TextStyledProps = {
   type?: "text" | "title" | "subtitle" | "caption";
 }
 
-export const TextStyled = ({
+export const TextStyled: React.FC<TextStyledProps & TextStyle> = ({
   text,
   size = 16,
   fontWeight = "normal",
   color = Colors.light.text,
   style = {},
   type = "text",
-}: TextStyledProps) => {
+  ...rest
+}) => {
   return (
-    <Text style={[{
-      fontFamily: fontWeight === "bold" ? "Montserrat-Bold" :
-        fontWeight === "light" ? "Montserrat-Light" : fontWeight === "medium" ? "Montserrat-Semibold" : "Montserrat-Regular",
-      fontSize: type === "title" ? size * 1.5 :
-        type === "subtitle" ? size * 1.2 : type === 'caption' ? 12 : size,
-      color: color,
-    },
-    style as TextStyle
-    ]}>{text}</Text>
+    <Text
+      style={[
+        {
+          fontFamily: fontWeight === "bold"
+            ? "Montserrat-Bold"
+            : fontWeight === "light"
+            ? "Montserrat-Light"
+            : fontWeight === "medium"
+            ? "Montserrat-Semibold"
+            : "Montserrat-Regular",
+          fontSize:
+            type === "title"
+              ? size * 1.5
+              : type === "subtitle"
+              ? size * 1.2
+              : type === "caption"
+              ? 12
+              : size,
+          color: color,
+        },
+        style as TextStyle,
+      ]}
+      {...rest}
+    >
+      {text}
+    </Text>
   );
-}
+};
