@@ -4,7 +4,6 @@ import { StyleSheet } from 'react-native';
 export const styles = StyleSheet.create({
   viewInput: {
     gap: 8,
-    flex: 1,
   },
   labelInput: {
     fontFamily: 'Montserrat-Regular',
@@ -17,7 +16,7 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 16,
     paddingHorizontal: 12,
-    fontSize: 16
+    fontSize: 16,
   },
   inputFocused: {
     borderColor: Colors.light.positiveBg,

@@ -1,3 +1,4 @@
+import { Colors } from "@/constants/Colors";
 import { useState } from "react";
 import { Text, TextInput, View } from "react-native";
 import { styles } from "../styles";
@@ -25,6 +26,7 @@ export const Input = ({ label, placeholder, id, keyboardType, style, type }: Inp
       <TextInput
         style={[styles.input, inputFocused && styles.inputFocused, style]}
         placeholder={placeholder}
+        placeholderTextColor={Colors.light.textTertiary}
         keyboardType={keyboardType || "default"}
         autoCapitalize="words"
         value={formattedValue}

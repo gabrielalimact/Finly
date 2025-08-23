@@ -1,5 +1,5 @@
 import { Colors } from "@/constants/Colors";
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import Feather from "@expo/vector-icons/Feather";
 import { useState } from "react";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
 import { styles } from "../styles";
@@ -29,7 +29,7 @@ export const InputPassword = ({ label, id }: InputProps) => {
       />
 
       <TouchableOpacity style={{ position: 'absolute', right: 12, top: 35 }} onPress={handleShowPassword}>
-        <FontAwesome6 name={showPassword ? 'eye-slash' : 'eye'} size={24} color={Colors.light.icon} />
+        <Feather name={showPassword ? 'eye-off' : 'eye'} size={20} color={Colors.light.icon} />
       </TouchableOpacity>
     </View>
   );
