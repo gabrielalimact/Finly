@@ -1,14 +1,15 @@
 export const Colors = {
   light: {
+    black: '#000000',
     tint: '#BDE4A7',
     infoCardBg: '#c2dbce',
     bgPrimary: '#F1F5F3',
     bgWhite: '#FAFAFB',
     bgGray: '#eaeaeaff',
-    primaryButtonBg: '#B2F5BF',
+    primaryButtonBg: '#88d098ff',
     secondaryButtonBg: '#FCD8F6',
     positiveBg: '#cff9bfff',
-    negativeBg: '#f8c5c5ff',
+    negativeBg: '#ec9898ff',
     warningBg: '#FFD66E',
 
     text: '#1A1A1A',
