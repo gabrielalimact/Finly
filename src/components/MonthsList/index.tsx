@@ -45,7 +45,7 @@ export const MonthsList = (
     setCurrentMonth(monthIndex)
     const layoutX = layoutMap[key]
     if (layoutX !== undefined && scrollViewRef.current) {
-      scrollViewRef.current.scrollTo({ x: layoutX - screenWidth / 2 + 40, animated: true })
+      scrollViewRef.current.scrollTo({ x: layoutX - screenWidth / 2 + 50, animated: true })
     }
   }
 
@@ -53,7 +53,7 @@ export const MonthsList = (
     if (Object.keys(layoutMap).length === allItems.length) {
       const key = `${currentYear}-${currentMonth}`
       if (scrollViewRef.current && layoutMap[key] !== undefined) {
-        scrollViewRef.current.scrollTo({ x: layoutMap[key] - screenWidth / 2 + 40, animated: true })
+        scrollViewRef.current.scrollTo({ x: layoutMap[key] - screenWidth / 2 + 50, animated: true })
       }
     }
   }, [layoutMap])

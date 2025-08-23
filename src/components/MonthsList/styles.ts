@@ -10,7 +10,7 @@ export const styles = StyleSheet.create({
   },
   monthItem: {
     marginRight: 15,
-    width: 80,
+    width: 100,
     justifyContent: 'center',
     alignItems: 'center',
     paddingVertical: 5,
