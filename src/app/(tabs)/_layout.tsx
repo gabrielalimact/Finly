@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 50,
     alignSelf: "center",
-    backgroundColor: Colors.light.tint,
+    backgroundColor: Colors.light.primaryButtonBg,
     borderRadius: 999,
     height: 60,
     width: 60,

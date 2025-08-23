@@ -15,7 +15,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
-  const [eyeOpen, setEyeOpen] = useState(false)
+  const [eyeOpen, setEyeOpen] = useState(true)
 
   const date = new Date().toLocaleDateString('pt-BR', {
     year: 'numeric',

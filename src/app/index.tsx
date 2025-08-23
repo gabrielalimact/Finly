@@ -87,11 +87,13 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 20
+    marginTop: 20,
+    borderWidth: 1,
+    borderColor: Colors.light.black
   },
   textButton: {
     fontFamily: 'Montserrat-SemiBold',
-    fontSize: 16
+    fontSize: 16,
   }
 })
 
