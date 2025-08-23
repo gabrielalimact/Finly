@@ -52,6 +52,8 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 50,
     alignItems: 'center',
+    borderWidth: 2,
+    borderColor: Colors.light.black,
   },
   primary: {
     backgroundColor: Colors.light.primaryButtonBg,
