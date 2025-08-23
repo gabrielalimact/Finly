@@ -1,19 +1,22 @@
 import { Card } from '@/components/Card';
+import { MonthsList } from '@/components/MonthsList';
+import { TextStyled } from '@/components/TextStyled';
 import { Colors } from '@/constants/Colors';
 import { mockUser } from '@/mocks/user';
-import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import { CardsBalance } from '@/modules/home-page/components/CardsBalance';
+import { FontAwesome5, Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
-  const [menuOpen, setMenuOpen] = useState(false)
+  const [eyeOpen, setEyeOpen] = useState(false)
+
   const date = new Date().toLocaleDateString('pt-BR', {
     year: 'numeric',
     month: '2-digit',
@@ -21,42 +24,69 @@ export default function HomeScreen() {
   })
 
   const toggleMenu = () => {
-    setMenuOpen(!menuOpen)
+    setEyeOpen(!eyeOpen)
   }
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }} >
+      <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.topBar}>
           <View style={styles.userInfosView}>
-            <Text style={[styles.text, styles.titleText]}>Olá, <Text style={styles.textBold}>{(mockUser.name).split(' ')[0]}</Text>!</Text>
+            <TextStyled text="Olá," type='subtitle' />
+            <TextStyled
+              text={mockUser.name.split(' ')[0] + '!'}
+              type='title'
+              fontWeight="bold"
+            />
           </View>
 
           <View style={styles.iconsView}>
             <TouchableOpacity onPress={toggleMenu} style={styles.iconButtonStyle}>
-              <FontAwesome6
-                name={menuOpen ? "grip-lines-vertical" : "grip-lines"}
+              <Ionicons
+                name={eyeOpen ? "eye-outline" : "eye-off-outline"}
                 size={24}
                 color={Colors.light.icon}
               />
             </TouchableOpacity>
+            <TouchableOpacity style={styles.iconButtonStyle}>
+              <Ionicons name="notifications-outline" size={24} color={Colors.light.icon} />
+            </TouchableOpacity>
           </View>
         </View>
+
+        <MonthsList year={2025} />
         <View style={styles.content}>
-          {/* <Divider /> */}
-          <Card>
-            <View style={{
-              flexDirection: 'column',
-              gap: 8,
-            }}>
-              <View style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-              }}>
-                <Text style={styles.text}>Saldo</Text>
-                <Text style={styles.caption}>{date}</Text>
+          <View style={styles.balanceView}>
+            <CardsBalance
+              title="Receitas"
+              amount={eyeOpen ? 'R$ 5.000,00' : 'R$ ****,**'}
+              isPositive
+            />
+            <CardsBalance
+              title="Despesas"
+              amount={eyeOpen ? 'R$ 5.000,00' : 'R$ ****,**'}
+              isPositive={false}
+            />
+          </View>
+
+          <Card style={styles.card}>
+            <View style={styles.iconDollarBox}>
+              <FontAwesome5 name="dollar-sign" size={24} color={Colors.light.icon} />
+            </View>
+            <View style={styles.cardTexts}>
+              <View style={styles.cardRow}>
+              <TextStyled
+                text="Saldo em"
+              />
+              <TextStyled
+                text={ date.split('/')[1] + "/" + date.split('/')[2]}
+                fontWeight='bold'
+              />
               </View>
-              <Text style={styles.biggerText}>R$ 2000,00</Text>
+              <TextStyled
+                text={eyeOpen ? 'R$ 10.000,00' : 'R$ ****,**'}
+                fontWeight='bold'
+              />
             </View>
           </Card>
         </View>
@@ -69,65 +99,61 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.light.bgPrimary,
-    padding: 20
-
+    padding: 20,
+  },
+  scrollContent: {
+    flexGrow: 1,
   },
   topBar: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 16
-  },
-  iconsView: {
-    flexDirection: 'row',
-    gap: 8
-  },
-  iconButtonStyle: {
-    padding: 8,
-    borderRadius: 50,
-    backgroundColor: Colors.light.overlay,
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 40,
-    width: 40,
-    shadowColor: "gray",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 1,
-    shadowRadius: 2,
-    elevation: 2
   },
   userInfosView: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8
+    gap: 8,
   },
-  userImage: {
-    width: 50,
-    height: 50
+  iconsView: {
+    flexDirection: 'row',
   },
-  text: {
-    fontFamily: 'Montserrat-Regular',
-  },
-  caption: {
-    fontFamily: 'Montserrat-Regular',
-    color: Colors.light.textSecondary,
-    fontSize: 12,
-  },
-  titleText: {
-    fontSize: 20,
-    textShadowColor: Colors.light.shadow,
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 2
-  },
-  textBold: {
-    fontFamily: 'Montserrat-Bold',
+  iconButtonStyle: {
+    padding: 8,
+    borderRadius: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 40,
+    width: 40,
   },
   content: {
-    gap: 16
+    gap: 16,
   },
-  biggerText: {
-    fontSize: 24,
-    fontFamily: 'Montserrat-Bold',
-    color: Colors.light.text,
+  balanceView: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    gap: 8,
+  },
+  card: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  iconDollarBox: {
+    backgroundColor: Colors.light.bgGray,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 8,
+  },
+  cardTexts: {
+    flexDirection: 'row',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 8,
+  },
+  cardRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
   }
-})
+});

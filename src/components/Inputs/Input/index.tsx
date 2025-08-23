@@ -1,37 +1,37 @@
-import { Colors } from "@/constants/Colors";
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useState } from "react";
-import { Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Text, TextInput, View } from "react-native";
 import { styles } from "../styles";
 import { InputProps } from "../types";
 
-export const Input = ({ label, placeholder, id }: InputProps) => {
+export const Input = ({ label, placeholder, id, keyboardType, style, type }: InputProps) => {
   const [data, setData] = useState("");
   const [inputFocused, setInputFocused] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
+  const formattedValue = type === "money" && data
+    ? `R$ ${data}`
+    : data;
 
-  const handleShowPassword = () => {
-    setShowPassword(!showPassword);
-  }
+  const handleChange = (value: string) => {
+    if (type === "money") {
+      const cleaned = value.replace(/[^\d,]/g, "");
+      setData(cleaned);
+    } else {
+      setData(value);
+    }
+  };
+
   return (
-    <View style={styles.viewInput}>
-      <Text style={styles.labelInput}>{label}</Text>
+    <View style={styles.viewInput} key={id}>
+      {label && <Text style={styles.labelInput}>{label}</Text>}
       <TextInput
-        style={[styles.input, inputFocused && styles.inputFocused]}
-        placeholder="******"
-        keyboardType="default"
+        style={[styles.input, inputFocused && styles.inputFocused, style]}
+        placeholder={placeholder}
+        keyboardType={keyboardType || "default"}
         autoCapitalize="words"
-        value={data}
-        onChangeText={setData}
+        value={formattedValue}
+        onChangeText={(value) => handleChange(value)}
         onFocus={() => setInputFocused(true)}
         onBlur={() => setInputFocused(false)}
-        secureTextEntry={!showPassword}
-        autoComplete="password"
       />
-
-      <TouchableOpacity style={{ position: 'absolute', right: 12, top: 35 }} onPress={handleShowPassword}>
-        <FontAwesome6 name={showPassword ? 'eye-slash' : 'eye'} size={24} color={Colors.light.icon} />
-      </TouchableOpacity>
     </View>
   );
 }
