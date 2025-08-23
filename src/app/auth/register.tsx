@@ -1,4 +1,5 @@
 import IconBack from '@/components/IconBack/IconBack'
+import { Input } from '@/components/Inputs/Input'
 import { InputPassword } from '@/components/Inputs/InputPassword'
 import { Colors } from '@/constants/Colors'
 import { useRouter } from 'expo-router'
@@ -10,7 +11,6 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
   View
@@ -26,7 +26,7 @@ export default function Register() {
   const [emailFocused, setEmailFocused] = useState(false)
   const [passwordFocused, setPasswordFocused] = useState(false)
 
-  function hanldeRegister() {
+  function handleRegister() {
     router.replace('/(tabs)')
 
     // if (!email || !password) {
@@ -49,12 +49,12 @@ export default function Register() {
             <IconBack onPress={handleGoBack} />
             <View style={{ flex: 1, justifyContent: 'center' }}>
               <View style={{ marginBottom: 40 }}>
-                <View style={{ alignItems: 'center', gap: 10, }}>
+                <View style={{ alignItems: 'center', gap: 10, marginBottom: 10 }}>
                   <Image
                     source={require('../../assets/images/img1.png')}
                     style={{
-                      width: 180,
-                      height: 180,
+                      width: 150,
+                      height: 150,
                     }}
                   />
                   <Text style={styles.title}>Cadastro</Text>
@@ -65,39 +65,11 @@ export default function Register() {
                 </Text>
               </View>
 
-              <View>
-                <View>
-                  <View style={styles.viewInput}>
-                    <Text style={styles.labelInput}>Nome</Text>
-                    <TextInput
-                      style={[styles.input, nameFocused && styles.inputFocused]}
-                      placeholder="Seu nome aqui"
-                      keyboardType="default"
-                      autoCapitalize="words"
-                      value={name}
-                      onChangeText={setName}
-                      onFocus={() => setNameFocused(true)}
-                      onBlur={() => setNameFocused(false)}
-                    />
-                  </View>
-                  <View style={styles.viewInput}>
-                    <Text style={styles.labelInput}>Email</Text>
-                    <TextInput
-                      style={[styles.input, emailFocused && styles.inputFocused]}
-                      placeholder="exemplo@email.com"
-                      keyboardType="email-address"
-                      autoCapitalize="none"
-                      value={email}
-                      onChangeText={setEmail}
-                      onFocus={() => setEmailFocused(true)}
-                      onBlur={() => setEmailFocused(false)}
-                    />
-                  </View>
-
-
-                </View>
+              <View style={styles.viewInput}>
+                <Input label='Nome' id='name-input' type='text'/>
+                <Input label='Email' id='email-input' type='email' />
                 <InputPassword label='Senha' id='password-input' />
-                <TouchableOpacity style={styles.button} onPress={hanldeRegister}>
+                <TouchableOpacity style={styles.button} onPress={handleRegister}>
                   <Text style={styles.buttonText}>Concluir</Text>
                 </TouchableOpacity>
               </View>
@@ -137,7 +109,7 @@ const styles = StyleSheet.create({
     color: '#2E2E2E'
   },
   viewInput: {
-    gap: 8
+    gap: 16
   },
   labelInput: {
     fontFamily: 'Montserrat-Regular',
@@ -162,7 +134,9 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 16,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: Colors.light.black
   },
   buttonText: {
     fontFamily: 'Montserrat-SemiBold',

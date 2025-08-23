@@ -1,4 +1,6 @@
 import IconBack from '@/components/IconBack/IconBack'
+import { Input } from '@/components/Inputs/Input'
+import { InputPassword } from '@/components/Inputs/InputPassword'
 import { Colors } from '@/constants/Colors'
 import { useRouter } from 'expo-router'
 import React, { useState } from 'react'
@@ -9,7 +11,6 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
   View
@@ -46,12 +47,12 @@ export default function Login() {
             <IconBack onPress={handleGoBack} />
             <View style={{ flex: 1, justifyContent: 'center', marginBottom: 40 }}>
               <View style={{ marginBottom: 40 }}>
-                <View style={{ alignItems: 'center', gap: 10 }}>
+                <View style={{ alignItems: 'center', gap: 10, marginBottom: 10 }}>
                   <Image
                     source={require('../../assets/images/img3.png')}
                     style={{
-                      width: 180,
-                      height: 180,
+                      width: 150,
+                      height: 150,
                     }}
                   />
                   <Text style={styles.title}>Login</Text>
@@ -62,38 +63,9 @@ export default function Login() {
                 </Text>
               </View>
 
-              <View>
-                <View>
-                  <View style={styles.viewInput}>
-                    <Text style={styles.labelInput}>Email</Text>
-                    <TextInput
-                      style={[styles.input, emailFocused && styles.inputFocused]}
-                      placeholder="exemplo@email.com"
-                      keyboardType="email-address"
-                      autoCapitalize="none"
-                      value={email}
-                      onChangeText={setEmail}
-                      onFocus={() => setEmailFocused(true)}
-                      onBlur={() => setEmailFocused(false)}
-                    />
-                  </View>
-
-                  <View style={styles.viewInput}>
-                    <Text style={styles.labelInput}>Senha</Text>
-                    <TextInput
-                      style={[
-                        styles.input,
-                        passwordFocused && styles.inputFocused
-                      ]}
-                      placeholder="******"
-                      secureTextEntry
-                      value={password}
-                      onChangeText={setPassword}
-                      onFocus={() => setPasswordFocused(true)}
-                      onBlur={() => setPasswordFocused(false)}
-                    />
-                  </View>
-                </View>
+              <View style={styles.viewInput}>
+                <Input label='Email' id='email-input' placeholder='example@email.com' type='email'/>
+                <InputPassword label='Senha' id='password-input' />
                 <TouchableOpacity style={styles.button} onPress={handleLogin}>
                   <Text style={styles.buttonText}>Entrar</Text>
                 </TouchableOpacity>
@@ -133,7 +105,7 @@ const styles = StyleSheet.create({
     color: '#2E2E2E'
   },
   viewInput: {
-    gap: 8
+    gap: 16
   },
   labelInput: {
     fontFamily: 'Montserrat-Regular',
@@ -158,7 +130,9 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 16,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: Colors.light.black
   },
   buttonText: {
     fontFamily: 'Montserrat-SemiBold',
