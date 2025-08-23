@@ -16,13 +16,17 @@ export const styles = StyleSheet.create({
   },
   buttonPositive: {
     padding: 10,
-    backgroundColor: Colors.light.positiveBg,
-    borderRadius: 5,
+    backgroundColor: Colors.light.primaryButtonBg,
+    borderRadius: 30,
     marginVertical: 10,
+    borderWidth: 2,
+    borderColor: "black",
   },
   buttonNegative: {
     padding: 10,
     backgroundColor: Colors.light.negativeBg,
-    borderRadius: 5,
+    borderRadius: 30,
+    borderWidth: 2,
+    borderColor: "black",
   },
 })

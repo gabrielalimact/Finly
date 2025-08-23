@@ -1,5 +1,5 @@
 import { TextStyled } from "@/components/TextStyled";
-import { Modal, TouchableOpacity, View } from "react-native";
+import { Modal, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
 import { styles } from "./styles";
 
 interface Props {
@@ -16,35 +16,35 @@ export const TransactionTypeModal = ({ visible, onClose, onSelect }: Props) => {
       visible={visible}
       onRequestClose={onClose}
     >
-      <View
-        style={styles.modalBody}
-      >
-        <View
-          style={styles.modalContent}
-        >
-          <TextStyled text="Selecione o tipo de transação" />
+      <TouchableWithoutFeedback onPress={onClose}>
+        <View style={styles.modalBody}>
+          <TouchableWithoutFeedback>
+            <View style={styles.modalContent}>
+              <TextStyled text="Selecione o tipo de transação" />
 
-          <TouchableOpacity
-            onPress={() => {
-              onSelect("income");
-              onClose();
-            }}
-            style={styles.buttonPositive}
-          >
-            <TextStyled text="Receita" fontWeight="bold" />
-          </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  onSelect("income");
+                  onClose();
+                }}
+                style={styles.buttonPositive}
+              >
+                <TextStyled text="Receita" fontWeight="bold" />
+              </TouchableOpacity>
 
-          <TouchableOpacity
-            onPress={() => {
-              onSelect("expense");
-              onClose();
-            }}
-            style={styles.buttonNegative}
-          >
-            <TextStyled text="Despesa" fontWeight="bold" />
-          </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  onSelect("expense");
+                  onClose();
+                }}
+                style={styles.buttonNegative}
+              >
+                <TextStyled text="Despesa" fontWeight="bold" />
+              </TouchableOpacity>
+            </View>
+          </TouchableWithoutFeedback>
         </View>
-      </View>
+      </TouchableWithoutFeedback>
     </Modal>
   );
 };
