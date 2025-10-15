@@ -4,7 +4,7 @@ export const styles = StyleSheet.create({
   flexRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
+    justifyContent: 'center',
   },
   header: {
     paddingBottom: 20,
@@ -14,8 +14,9 @@ export const styles = StyleSheet.create({
     height: 50,
     marginBottom: 20,
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
+    justifyContent: 'center',
+
   },
   headerInput: {
     paddingHorizontal: 20,

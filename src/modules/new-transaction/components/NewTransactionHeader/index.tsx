@@ -27,14 +27,6 @@ export const NewTransactionHeader = ({
       ]}
     >
       <View style={styles.headerIcons}>
-        <TouchableOpacity onPress={onClose}>
-          <AntDesign
-            name="close"
-            size={24}
-            color={isIncome ? Colors.light.iconGreen : "white"}
-          />
-        </TouchableOpacity>
-
         <TouchableOpacity onPress={onOpenModal} style={styles.flexRow}>
           <TextStyled
             fontWeight="bold"
@@ -47,14 +39,6 @@ export const NewTransactionHeader = ({
             color={isIncome ? Colors.light.iconGreen : "white"}
           />
         </TouchableOpacity>
-
-        <TouchableOpacity onPress={onSave} style={styles.flexRow}>
-          <AntDesign
-            name="save"
-            size={24}
-            color={isIncome ? Colors.light.iconGreen : "white"}
-          />
-        </TouchableOpacity>
       </View>
 
       <View style={styles.headerInput}>
@@ -64,8 +48,10 @@ export const NewTransactionHeader = ({
           keyboardType="numeric"
           id="amount"
           style={styles.amountInput}
+          placeholderTextColor={isIncome ? '' : 'gray'}
         />
       </View>
+       
     </View>
   );
 };

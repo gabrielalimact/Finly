@@ -8,5 +8,10 @@ export const styles = StyleSheet.create({
   form: {
     padding: 20,
   },
+    flexRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
 
 });
