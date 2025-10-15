@@ -1,7 +1,7 @@
 import { Colors } from "@/constants/Colors"
-import { AntDesign, FontAwesome, FontAwesome6, Ionicons } from "@expo/vector-icons"
-import { router, Tabs } from "expo-router"
-import { StyleSheet, TouchableOpacity, View } from "react-native"
+import { AntDesign, FontAwesome } from "@expo/vector-icons"
+import { Tabs } from "expo-router"
+import { StyleSheet, View } from "react-native"
 
 export default function TabLayout() {
   return (
@@ -10,10 +10,26 @@ export default function TabLayout() {
         screenOptions={{
           headerShown: false,
           tabBarShowLabel: false,
-          tabBarActiveTintColor: Colors.light.tint,
-          tabBarIconStyle: { marginTop: 10 },
+          tabBarActiveTintColor: Colors.light.text,
+          tabBarInactiveTintColor: Colors.light.textSecondary,
           tabBarStyle: {
-            paddingHorizontal: 20,
+            position: 'absolute',
+            bottom: 50,
+            height: 70,
+            backgroundColor: Colors.light.bgGray,
+            borderRadius: 35,
+            borderWidth: 1,
+            borderColor: Colors.light.border,
+            paddingBottom: 0,
+            shadowColor: Colors.light.shadow,
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.3,
+            shadowRadius: 8,
+            elevation: 10,
+            marginHorizontal: 60,
+          },
+          tabBarItemStyle: {
+            paddingVertical: 15,
           },
         }}
       >
@@ -21,61 +37,54 @@ export default function TabLayout() {
           name="index"
           options={{
             title: "Home",
-            tabBarIcon: ({ color }) => (
-              <AntDesign size={28} name="home" color={color} />
+            tabBarIcon: ({ color, focused }) => (
+              <View style={[styles.tabIcon, focused && styles.activeTabIcon]}>
+                <AntDesign size={24} name="home" color={color} />
+              </View>
             ),
           }}
         />
-
-        
         <Tabs.Screen
-          name="accounts"
+          name="new-transaction"
           options={{
-            title: "Contas e Cartões",
-            tabBarItemStyle: { marginRight: 30 },
-            tabBarIcon: ({ color }) => (
-              <AntDesign size={28} name="creditcard" color={color} />
+            title: "Nova Transação",
+            tabBarIcon: ({ color, focused }) => (
+              <View style={[styles.tabIcon, focused && styles.activeTabIcon]}>
+                <FontAwesome name="plus" size={20} color={color} />
+              </View>
             ),
           }}
         />
-
-        <Tabs.Screen
-          name="reports"
-          options={{
-            title: "Relatórios",
-            tabBarItemStyle: { marginLeft: 30 },
-            tabBarIcon: ({ color }) => (
-              <Ionicons name="stats-chart" size={24} color={color} />
-            ),
-          }}
-        />
-
         <Tabs.Screen
           name="profile"
           options={{
             title: "Perfil",
-            tabBarIcon: ({ color }) => (
-              <FontAwesome name="user-o" size={24} color={color} />
+            tabBarIcon: ({ color, focused }) => (
+              <View style={[styles.tabIcon, focused && styles.activeTabIcon]}>
+                <FontAwesome name="user-o" size={20} color={color} />
+              </View>
             ),
           }}
         />
       </Tabs>
-
-      <TouchableOpacity
-        activeOpacity={0.7}
-        style={styles.floatingButton}
-        onPress={() => router.push("/new-transaction")}
-      >
-        <FontAwesome6 size={30} name="plus" color="#fff"  />
-      </TouchableOpacity>
     </View>
   )
 }
 
 const styles = StyleSheet.create({
+  tabIcon: {
+    width: 45,
+    height: 45,
+    borderRadius: 22.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  activeTabIcon: {
+    backgroundColor: Colors.light.primaryButtonBg,
+  },
   floatingButton: {
     position: "absolute",
-    bottom: 50,
+    bottom: 80,
     alignSelf: "center",
     backgroundColor: Colors.light.primaryButtonBg,
     borderRadius: 999,
