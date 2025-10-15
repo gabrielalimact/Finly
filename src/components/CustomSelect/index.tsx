@@ -4,9 +4,11 @@ import { Modal, Text, TouchableOpacity, View } from 'react-native';
 import { TextStyled } from '../TextStyled';
 import { styles } from './styles';
 
-const data = ['Opção 1', 'Opção 2', 'Opção 3'];
 
-export const CustomSelect = () => {
+type Props = {
+  data: string[];
+}
+export const CustomSelect = ({ data = [] }: Props) => {
   const [selected, setSelected] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
 

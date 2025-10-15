@@ -4,7 +4,7 @@ import { Text, TextInput, View } from "react-native";
 import { styles } from "../styles";
 import { InputProps } from "../types";
 
-export const Input = ({ label, placeholder, id, keyboardType, style, type }: InputProps) => {
+export const Input = ({ label, placeholder, placeholderTextColor, id, keyboardType, style, type }: InputProps) => {
   const [data, setData] = useState("");
   const [inputFocused, setInputFocused] = useState(false);
   const formattedValue = type === "money" && data
@@ -26,7 +26,7 @@ export const Input = ({ label, placeholder, id, keyboardType, style, type }: Inp
       <TextInput
         style={[styles.input, inputFocused && styles.inputFocused, style]}
         placeholder={placeholder}
-        placeholderTextColor={Colors.light.textTertiary}
+        placeholderTextColor={placeholderTextColor ?? Colors.light.textTertiary}
         keyboardType={keyboardType || "default"}
         autoCapitalize="words"
         value={formattedValue}

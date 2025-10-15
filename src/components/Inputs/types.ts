@@ -9,6 +9,7 @@ export type InputProps = {
   onChange?: (value: string) => void;
   onFocus?: () => void;
   onBlur?: () => void;
+  placeholderTextColor?: string;
   keyboardType?: "default" | "email-address" | "numeric" | "phone-pad";
   style?: StyleProp<TextStyle>;
 }
