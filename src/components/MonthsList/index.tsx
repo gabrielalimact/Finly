@@ -12,9 +12,10 @@ const months = [
 
 type Props = {
   year: number
+  onMonthChange?: (month: number) => void
 }
 export const MonthsList = (
-  { year }: Props
+  { year, onMonthChange }: Props
 ) => {
   const scrollViewRef = useRef<ScrollView>(null)
   const currentYear = new Date().getFullYear()
@@ -43,6 +44,7 @@ export const MonthsList = (
   const handleMonthPress = (key: string) => {
     const [year, monthIndex] = key.split('-').map(Number)
     setCurrentMonth(monthIndex)
+    onMonthChange?.(monthIndex) 
     const layoutX = layoutMap[key]
     if (layoutX !== undefined && scrollViewRef.current) {
       scrollViewRef.current.scrollTo({ x: layoutX - screenWidth / 2 + 50, animated: true })
@@ -72,7 +74,7 @@ export const MonthsList = (
             key={key}
             onLayout={handleScrollToCurrentMonth(key)}
             style={[styles.monthItem, {
-              backgroundColor: year === currentYear && index === currentMonth ? Colors.light.bgGray : 'transparent',
+              backgroundColor: year === currentYear && index === currentMonth ? Colors.light.green : 'transparent',
             }]}
             onPress={() => {
               handleMonthPress(key)
@@ -81,7 +83,7 @@ export const MonthsList = (
             <TextStyled
               text={label}
               type="text"
-              color={year === currentYear && index === currentMonth ? '#000' : '#888'}
+              color={year === currentYear && index === currentMonth ? Colors.light.black : Colors.light.textSecondary}
               fontWeight={year === currentYear && index === currentMonth ? 'bold' : 'normal'}
             />
           </TouchableOpacity>
