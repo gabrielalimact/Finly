@@ -30,12 +30,12 @@ const Button = ({
     >
       {
         loading ? (
-          <ActivityIndicator color={Colors.light.text} />
+          <ActivityIndicator color={Colors.light.black} />
         ) : (
           <Text style={[
             styles[size],
             {
-              color: disabled  ? Colors.light.textTertiary : Colors.light.text,
+              color: disabled  ? Colors.light.textTertiary : Colors.light.black,
               fontFamily: 'Montserrat-SemiBold',
             }
           ]}>
@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.light.black,
   },
   primary: {
-    backgroundColor: Colors.light.primaryButtonBg,
+    backgroundColor: Colors.light.green,
   },
   secondary: {
     backgroundColor: Colors.light.bgGray,

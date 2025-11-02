@@ -23,7 +23,7 @@ export const NewTransactionHeader = ({
     <View
       style={[
         styles.header,
-        { backgroundColor: isIncome ? Colors.light.positiveBg : Colors.light.negativeBg },
+        { backgroundColor: isIncome ? Colors.light.green : Colors.light.darkRed },
       ]}
     >
       <View style={styles.headerIcons}>
@@ -31,12 +31,12 @@ export const NewTransactionHeader = ({
           <TextStyled
             fontWeight="bold"
             text={isIncome ? "Nova Receita" : "Nova Despesa"}
-            color={isIncome ? Colors.light.iconGreen : "white"}
+            color={"white"}
           />
           <AntDesign
             name="down"
             size={22}
-            color={isIncome ? Colors.light.iconGreen : "white"}
+            color={"white"}
           />
         </TouchableOpacity>
       </View>

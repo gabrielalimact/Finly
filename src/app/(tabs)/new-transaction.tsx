@@ -94,7 +94,7 @@ export const styles = StyleSheet.create({
   },
   button: {
     marginHorizontal: 20,
-    backgroundColor: Colors.light.primaryButtonBg,
+    backgroundColor: Colors.light.green,
     height: 40,
     borderRadius: 16,
     justifyContent: 'center',

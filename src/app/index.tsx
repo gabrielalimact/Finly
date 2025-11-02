@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 36,
     fontFamily: 'Montserrat-Bold',
-    color: Colors.light.text
+    color: Colors.light.black
   },
   text: {
     fontSize: 36,
@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
   },
 
   banner: {
-    backgroundColor: Colors.light.primaryButtonBg,
+    backgroundColor: Colors.light.green,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 30,
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     height: 40
   },
   loginButton: {
-    backgroundColor: Colors.light.primaryButtonBg,
+    backgroundColor: Colors.light.green,
     height: 40,
     borderRadius: 50,
     justifyContent: 'center',

@@ -14,7 +14,7 @@ export const TextStyled: React.FC<TextStyledProps & TextStyle> = ({
   text,
   size = 16,
   fontWeight = "normal",
-  color = Colors.light.text,
+  color = Colors.light.black,
   style = {},
   type = "text",
   ...rest

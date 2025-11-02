@@ -32,7 +32,7 @@ const CardsBalance = ({
       </View>
       <View>
         <TextStyled text={title} type='caption' color={Colors.light.textSecondary} />
-        <TextStyled fontWeight='bold' text={amount} color={Colors.light.text} />
+        <TextStyled fontWeight='bold' text={amount} color={Colors.light.black} />
       </View>
     </Card>
   )

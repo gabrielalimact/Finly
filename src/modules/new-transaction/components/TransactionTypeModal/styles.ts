@@ -16,7 +16,7 @@ export const styles = StyleSheet.create({
   },
   buttonPositive: {
     padding: 10,
-    backgroundColor: Colors.light.primaryButtonBg,
+    backgroundColor: Colors.light.green,
     borderRadius: 30,
     marginVertical: 10,
     borderWidth: 2,
@@ -24,7 +24,7 @@ export const styles = StyleSheet.create({
   },
   buttonNegative: {
     padding: 10,
-    backgroundColor: Colors.light.negativeBg,
+    backgroundColor: Colors.light.darkRed,
     borderRadius: 30,
     borderWidth: 2,
     borderColor: "black",

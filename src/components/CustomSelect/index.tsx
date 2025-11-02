@@ -17,7 +17,7 @@ export const CustomSelect = ({ data = [] }: Props) => {
     <View style={styles.container}>
       <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.selectBox}>
         <TextStyled text={selected || 'Selecione uma opção'}
-          color={selected ? Colors.light.text : Colors.light.textTertiary}
+          color={selected ? Colors.light.black : Colors.light.textSecondary}
         />
       </TouchableOpacity>
 

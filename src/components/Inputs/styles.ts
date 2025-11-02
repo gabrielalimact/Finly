@@ -19,7 +19,7 @@ export const styles = StyleSheet.create({
     fontSize: 16,
   },
   inputFocused: {
-    borderColor: Colors.light.positiveBg,
+    borderColor: Colors.light.green,
     borderWidth: 2
   },
 });

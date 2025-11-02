@@ -10,7 +10,7 @@ export default function TabLayout() {
         screenOptions={{
           headerShown: false,
           tabBarShowLabel: false,
-          tabBarActiveTintColor: Colors.light.text,
+          tabBarActiveTintColor: Colors.light.black,
           tabBarInactiveTintColor: Colors.light.textSecondary,
           tabBarStyle: {
             position: 'absolute',
@@ -55,6 +55,17 @@ export default function TabLayout() {
             ),
           }}
         />
+         <Tabs.Screen
+          name="transactions"
+          options={{
+            title: "Transações",
+            tabBarIcon: ({ color, focused }) => (
+              <View style={[styles.tabIcon, focused && styles.activeTabIcon]}>
+                <FontAwesome name="exchange" size={20} color={color} />
+              </View>
+            ),
+          }}
+        />
         <Tabs.Screen
           name="profile"
           options={{
@@ -80,13 +91,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   activeTabIcon: {
-    backgroundColor: Colors.light.primaryButtonBg,
+    backgroundColor: Colors.light.green,
   },
   floatingButton: {
     position: "absolute",
     bottom: 80,
     alignSelf: "center",
-    backgroundColor: Colors.light.primaryButtonBg,
+    backgroundColor: Colors.light.green,
     borderRadius: 999,
     height: 60,
     width: 60,
