@@ -1,3 +1,4 @@
+import { UserProvider, useUser } from '@/contexts'
 import { useFonts } from 'expo-font'
 import { Stack, useRouter } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
@@ -5,8 +6,9 @@ import { useEffect } from 'react'
 import 'react-native-reanimated'
 import { SplashScreen } from './splash'
 
-export default function RootLayout() {
+function RootLayoutContent() {
   const router = useRouter()
+  const { isAuthenticated, isLoading } = useUser()
   const [loaded] = useFonts({
     'Montserrat-Bold': require('../assets/fonts/Montserrat-Bold.ttf'),
     'Montserrat-Medium': require('../assets/fonts/Montserrat-Medium.ttf'),
@@ -15,16 +17,17 @@ export default function RootLayout() {
     'Montserrat-Light': require('../assets/fonts/Montserrat-Light.ttf')
   })
 
-  const isLogged = false
-
   useEffect(() => {
-    if (loaded && isLogged) {
-      router.replace('/(tabs)')
+    if (loaded && !isLoading) {
+      if (isAuthenticated) {
+        router.replace('/(tabs)')
+      } else {
+        router.replace('/')
+      }
     }
-  }, [loaded, isLogged])
+  }, [loaded, isLoading, isAuthenticated])
 
-  if (!loaded) {
-    // Async font loading only occurs in development.
+  if (!loaded || isLoading) {
     return <SplashScreen />
   }
 
@@ -54,5 +57,13 @@ export default function RootLayout() {
       </Stack>
       <StatusBar style="dark" />
     </>
+  )
+}
+
+export default function RootLayout() {
+  return (
+    <UserProvider>
+      <RootLayoutContent />
+    </UserProvider>
   )
 }

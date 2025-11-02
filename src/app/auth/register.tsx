@@ -2,9 +2,11 @@ import IconBack from '@/components/IconBack/IconBack'
 import { Input } from '@/components/Inputs/Input'
 import { InputPassword } from '@/components/Inputs/InputPassword'
 import { Colors } from '@/constants/Colors'
+import { useUser } from '@/contexts'
 import { useRouter } from 'expo-router'
 import React, { useState } from 'react'
 import {
+  Alert,
   Image,
   Keyboard,
   KeyboardAvoidingView,
@@ -19,26 +21,56 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 
 export default function Register() {
   const router = useRouter()
+  const { signIn } = useUser()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [nameFocused, setNameFocused] = useState(false)
   const [emailFocused, setEmailFocused] = useState(false)
   const [passwordFocused, setPasswordFocused] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
-  function handleRegister() {
-    router.replace('/(tabs)')
+  async function handleRegister() {
+    if (!name || !email || !password) {
+      Alert.alert('Erro', 'Por favor, preencha todos os campos.');
+      return;
+    }
 
-    // if (!email || !password) {
-    //   Alert.alert('Erro', 'Por favor, preencha todos os campos.');
-    //   return;
-    // }
-    // else {
-    // }
+    setIsLoading(true);
+
+    try {
+      const newUser = {
+        id: Date.now().toString(),
+        name: name,
+        email: email,
+      };
+      
+      const mockToken = 'mock-jwt-token-' + Date.now();
+      const mockRefreshToken = 'mock-refresh-token-' + Date.now();
+
+      await signIn(newUser, mockToken, mockRefreshToken);
+      
+    } catch (error) {
+      Alert.alert('Erro', 'Falha ao criar conta. Tente novamente.');
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   function handleGoBack() {
     router.back()
+  }
+
+  const handleChangeName = (text: string) => {
+    setName(text)
+  }
+
+  const handleChangeEmail = (text: string) => {
+    setEmail(text)
+  }
+
+  const handleChangePassword = (text: string) => {
+    setPassword(text)
   }
 
   return (
@@ -66,9 +98,26 @@ export default function Register() {
               </View>
 
               <View style={styles.viewInput}>
-                <Input label='Nome' id='name-input' type='text'/>
-                <Input label='Email' id='email-input' type='email' />
-                <InputPassword label='Senha' id='password-input' />
+                <Input 
+                  label='Nome' 
+                  id='name-input' 
+                  type='text'
+                  value={name}
+                  onChange={handleChangeName}
+                />
+                <Input 
+                  label='Email' 
+                  id='email-input' 
+                  type='email'
+                  value={email}
+                  onChange={handleChangeEmail}
+                />
+                <InputPassword 
+                  label='Senha' 
+                  id='password-input'
+                  value={password}
+                  onChange={handleChangePassword}
+                />
                 <TouchableOpacity style={styles.button} onPress={handleRegister}>
                   <Text style={styles.buttonText}>Concluir</Text>
                 </TouchableOpacity>
@@ -92,7 +141,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'space-between',
     paddingHorizontal: 20,
-    backgroundColor: Colors.light.bgWhite
+    backgroundColor: Colors.light.bgPrimary
   },
   iconText: {
     fontSize: 24,
@@ -126,11 +175,11 @@ const styles = StyleSheet.create({
     fontSize: 16
   },
   inputFocused: {
-    borderColor: Colors.light.positiveBg,
+    borderColor: Colors.light.green,
     borderWidth: 2
   },
   button: {
-    backgroundColor: Colors.light.primaryButtonBg,
+    backgroundColor: Colors.light.green,
     height: 40,
     borderRadius: 16,
     justifyContent: 'center',

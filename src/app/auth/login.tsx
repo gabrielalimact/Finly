@@ -2,9 +2,11 @@ import IconBack from '@/components/IconBack/IconBack'
 import { Input } from '@/components/Inputs/Input'
 import { InputPassword } from '@/components/Inputs/InputPassword'
 import { Colors } from '@/constants/Colors'
+import { useUser } from '@/contexts'
 import { useRouter } from 'expo-router'
 import React, { useState } from 'react'
 import {
+  Alert,
   Image,
   Keyboard,
   KeyboardAvoidingView,
@@ -19,24 +21,48 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 
 export default function Login() {
   const router = useRouter()
+  const { signIn } = useUser()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [emailFocused, setEmailFocused] = useState(false)
-  const [passwordFocused, setPasswordFocused] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
-  function handleLogin() {
-    router.replace('/(tabs)')
+  async function handleLogin() {
+    if (!email || !password) {
+      Alert.alert('Erro', 'Por favor, preencha todos os campos.');
+      return;
+    }
 
-    // if (!email || !password) {
-    //   Alert.alert('Erro', 'Por favor, preencha todos os campos.');
-    //   return;
-    // }
-    // else {
-    // }
+    setIsLoading(true);
+
+    try {
+      const mockUser = {
+        id: '1',
+        name: 'Gabriela Cena',
+        email: email,
+      };
+      
+      const mockToken = 'mock-jwt-token-' + Date.now();
+      const mockRefreshToken = 'mock-refresh-token-' + Date.now();
+
+      await signIn(mockUser, mockToken, mockRefreshToken);
+      
+    } catch (error) {
+      Alert.alert('Erro', 'Falha ao fazer login. Tente novamente.');
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   function handleGoBack() {
     router.back()
+  }
+
+  const handleChangeEmail = (text: string) => {
+    setEmail(text)
+  }
+
+  const handleChangePassword = (text: string) => {
+    setPassword(text)
   }
 
   return (
@@ -64,8 +90,20 @@ export default function Login() {
               </View>
 
               <View style={styles.viewInput}>
-                <Input label='Email' id='email-input' placeholder='example@email.com' type='email'/>
-                <InputPassword label='Senha' id='password-input' />
+                <Input 
+                  label='Email' 
+                  id='email-input' 
+                  placeholder='example@email.com' 
+                  type='email' 
+                  value={email}
+                  onChange={handleChangeEmail}
+                />
+                <InputPassword 
+                  label='Senha' 
+                  id='password-input' 
+                  value={password}
+                  onChange={handleChangePassword} 
+                />
                 <TouchableOpacity style={styles.button} onPress={handleLogin}>
                   <Text style={styles.buttonText}>Entrar</Text>
                 </TouchableOpacity>
@@ -88,7 +126,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     justifyContent: 'space-between',
-    backgroundColor: Colors.light.bgWhite
+    backgroundColor: Colors.light.bgPrimary
   },
   iconText: {
     fontSize: 24,
@@ -122,11 +160,11 @@ const styles = StyleSheet.create({
     fontSize: 16
   },
   inputFocused: {
-    borderColor: Colors.light.positiveBg,
+    borderColor: Colors.light.green,
     borderWidth: 2
   },
   button: {
-    backgroundColor: Colors.light.primaryButtonBg,
+    backgroundColor: Colors.light.green,
     height: 40,
     borderRadius: 16,
     justifyContent: 'center',
