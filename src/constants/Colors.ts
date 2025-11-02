@@ -36,13 +36,12 @@ export const Colors = {
     neonGreen: '#39FF14'
   },
   dark: {
-    // Cores baseadas no design da imagem
-    bgPrimary: '#0B1426', // Azul escuro principal
-    bgSecondary: '#1A2B4A', // Azul médio para cards
-    bgTertiary: '#2A3B5A', // Azul mais claro para elementos
+    bgPrimary: '#0B1426',
+    bgSecondary: '#1A2B4A',
+    bgTertiary: '#2A3B5A',
     bgWhite: '#FFFFFF',
-    bgCard: 'rgba(255, 255, 255, 0.08)', // Cards transparentes
-    bgButton: '#2563EB', // Azul do botão
+    bgCard: 'rgba(255, 255, 255, 0.08)',
+    bgButton: '#2563EB',
     
     text: '#FFFFFF',
     textSecondary: '#B8C5D1',
@@ -61,7 +60,6 @@ export const Colors = {
     overlay: 'rgba(0, 0, 0, 0.5)',
     shadow: 'rgba(0, 0, 0, 0.3)',
     
-    // Gradiente como na imagem
     gradient: ['#0B1426', '#1A2B4A', '#2A3B5A']
   }
 }
