@@ -1,12 +1,10 @@
-import { Card } from '@/components/Card';
+import { CircularChart } from '@/components/CircularChart';
 import { MonthsList } from '@/components/MonthsList';
 import { TextStyled } from '@/components/TextStyled';
 import { Colors } from '@/constants/Colors';
-import { mockUser } from '@/mocks/user';
-import { CardsBalance } from '@/modules/home-page/components/CardsBalance';
-import { FontAwesome5, Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
-import { useState } from 'react';
+import { useUser } from '@/contexts';
+import { Ionicons } from '@expo/vector-icons';
+import { useEffect, useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -16,92 +14,79 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
+  const { user } = useUser()
   const [eyeOpen, setEyeOpen] = useState(true)
-
-  const date = new Date().toLocaleDateString('pt-BR', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  })
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth())
 
   const toggleMenu = () => {
     setEyeOpen(!eyeOpen)
   }
 
+  // Dados mockados por mês (Janeiro = 0, Dezembro = 11)
+  const monthlyData = {
+    0: { income: 4200, expenses: 2800 }, // Janeiro
+    1: { income: 3800, expenses: 3200 }, // Fevereiro
+    2: { income: 4500, expenses: 2900 }, // Março
+    3: { income: 4000, expenses: 3100 }, // Abril
+    4: { income: 5000, expenses: 3000 }, // Maio (dados atuais)
+    5: { income: 4300, expenses: 2700 }, // Junho
+    6: { income: 4600, expenses: 3400 }, // Julho
+    7: { income: 4100, expenses: 2600 }, // Agosto
+    8: { income: 4700, expenses: 3200 }, // Setembro
+    9: { income: 4400, expenses: 2900 }, // Outubro
+    10: { income: 4800, expenses: 3100 }, // Novembro
+    11: { income: 5200, expenses: 3500 }, // Dezembro
+  }
+
+  const currentMonthData = monthlyData[selectedMonth as keyof typeof monthlyData] || monthlyData[4]
+
+  const handleMonthChange = (month: number) => {
+    setSelectedMonth(month)
+  }
+
+  useEffect(() => {
+    setSelectedMonth(new Date().getMonth())
+  }, [])
+
   return (
-    <LinearGradient 
-      colors={['#ffffffff', '#dcffeeff']}
-      style={styles.container}
-    >
-      <SafeAreaView style={styles.safeArea}>
-        <ScrollView contentContainerStyle={styles.scrollContent}>
-          <View style={styles.topBar}>
-            <View style={styles.userInfosView}>
-              <TextStyled text="Olá," type='subtitle' color={Colors.light.textSecondary} />
-              <TextStyled
-                text={mockUser.name.split(' ')[0] + '!'}
-                type='title'
-                fontWeight="bold"
-                color={Colors.light.text}
-              />
-            </View>
-
-            <View style={styles.iconsView}>
-              <TouchableOpacity onPress={toggleMenu} style={styles.iconButtonStyle}>
-                <Ionicons
-                  name={eyeOpen ? "eye-outline" : "eye-off-outline"}
-                  size={24}
-                  color={Colors.light.icon}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.iconButtonStyle}>
-                <Ionicons name="notifications-outline" size={24} color={Colors.light.icon} />
-              </TouchableOpacity>
-            </View>
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <View style={styles.topBar}>
+          <View style={styles.userInfosView}>
+            <TextStyled text="Olá," type='subtitle' color={Colors.light.textSecondary} />
+            <TextStyled
+              text={user?.name?.split(' ')[0] + '!' || 'Usuário!'}
+              type='title'
+              fontWeight="bold"
+              color={Colors.light.black}
+            />
           </View>
 
-          <MonthsList year={2025} />
-          <View style={styles.content}>
-            <View style={styles.balanceView}>
-              <CardsBalance
-                title="Receitas"
-                amount={eyeOpen ? 'R$ 5.000,00' : 'R$ ****,**'}
-                isPositive
+          <View style={styles.iconsView}>
+            <TouchableOpacity onPress={toggleMenu} style={styles.iconButtonStyle}>
+              <Ionicons
+                name={eyeOpen ? "eye-outline" : "eye-off-outline"}
+                size={24}
+                color={Colors.light.icon}
               />
-              <CardsBalance
-                title="Despesas"
-                amount={eyeOpen ? 'R$ 5.000,00' : 'R$ ****,**'}
-                isPositive={false}
-              />
-            </View>
-
-            <Card style={styles.card}>
-              <View style={styles.iconDollarBox}>
-                <FontAwesome5 name="dollar-sign" size={24} color={Colors.light.icon} />
-              </View>
-              <View style={styles.cardTexts}>
-                <View style={styles.cardRow}>
-                  <TextStyled
-                    text="Saldo em"
-                    color={Colors.light.textSecondary}
-                  />
-                  <TextStyled
-                    text={date.split('/')[1] + "/" + date.split('/')[2]}
-                    fontWeight='bold'
-                    color={Colors.light.textSecondary}
-                  />
-                </View>
-                <TextStyled
-                  text={eyeOpen ? 'R$ 10.000,00' : 'R$ ****,**'}
-                  fontWeight='bold'
-                  color={Colors.light.text}
-                />
-              </View>
-            </Card>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.iconButtonStyle}>
+              <Ionicons name="notifications-outline" size={24} color={Colors.light.icon} />
+            </TouchableOpacity>
           </View>
-        </ScrollView>
-      </SafeAreaView>
-    </LinearGradient>
+        </View>
+
+        <MonthsList year={2025} onMonthChange={handleMonthChange} />
+        <View style={styles.content}>
+          <CircularChart
+            income={currentMonthData.income}
+            expenses={currentMonthData.expenses}
+            hideValues={!eyeOpen}
+            selectedMonth={selectedMonth}
+          />
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   )
 }
 
@@ -111,6 +96,7 @@ const styles = StyleSheet.create({
   },
   safeArea: {
     flex: 1,
+    backgroundColor: Colors.light.bgPrimary,
   },
   scrollContent: {
     flexGrow: 1,
@@ -141,6 +127,8 @@ const styles = StyleSheet.create({
   },
   content: {
     gap: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   balanceView: {
     flexDirection: 'row',
@@ -155,7 +143,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.light.border,
   },
   iconDollarBox: {
-    backgroundColor: Colors.light.positiveBg,
+    backgroundColor: Colors.light.green,
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 8,
@@ -171,5 +159,5 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-  }
+  },
 });
