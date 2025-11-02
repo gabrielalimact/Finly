@@ -5,10 +5,22 @@ import { Text, TextInput, TouchableOpacity, View } from "react-native";
 import { styles } from "../styles";
 import { InputProps } from "../types";
 
-export const InputPassword = ({ label, id }: InputProps) => {
-  const [data, setData] = useState("");
+export const InputPassword = ({ label, id, onChange, value }: InputProps) => {
+  const [data, setData] = useState(value || "");
   const [inputFocused, setInputFocused] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  const currentValue = value !== undefined ? value : data;
+
+  const handleChange = (newValue: string) => {
+    if (value === undefined) {
+      setData(newValue);
+    }
+    
+    if (onChange) {
+      onChange(newValue);
+    }
+  };
 
   const handleShowPassword = () => {
     setShowPassword(!showPassword);
@@ -20,8 +32,8 @@ export const InputPassword = ({ label, id }: InputProps) => {
         style={[styles.input, inputFocused && styles.inputFocused]}
         placeholder="******"
         id={id}
-        value={data}
-        onChangeText={setData}
+        value={currentValue}
+        onChangeText={handleChange}
         onFocus={() => setInputFocused(true)}
         onBlur={() => setInputFocused(false)}
         secureTextEntry={!showPassword}

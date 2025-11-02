@@ -4,19 +4,29 @@ import { Text, TextInput, View } from "react-native";
 import { styles } from "../styles";
 import { InputProps } from "../types";
 
-export const Input = ({ label, placeholder, placeholderTextColor, id, keyboardType, style, type }: InputProps) => {
-  const [data, setData] = useState("");
+export const Input = ({ label, placeholder, placeholderTextColor, id, keyboardType, style, type, onChange, value }: InputProps) => {
+  const [data, setData] = useState(value || "");
   const [inputFocused, setInputFocused] = useState(false);
-  const formattedValue = type === "money" && data
-    ? `R$ ${data}`
-    : data;
+  
+  const currentValue = value !== undefined ? value : data;
+  
+  const formattedValue = type === "money" && currentValue
+    ? `R$ ${currentValue}`
+    : currentValue;
 
   const handleChange = (value: string) => {
+    let processedValue = value;
+    
     if (type === "money") {
-      const cleaned = value.replace(/[^\d,]/g, "");
-      setData(cleaned);
-    } else {
-      setData(value);
+      processedValue = value.replace(/[^\d,]/g, "");
+    }
+    
+    if (value === undefined) {
+      setData(processedValue);
+    }
+    
+    if (onChange) {
+      onChange(processedValue);
     }
   };
 
@@ -26,7 +36,7 @@ export const Input = ({ label, placeholder, placeholderTextColor, id, keyboardTy
       <TextInput
         style={[styles.input, inputFocused && styles.inputFocused, style]}
         placeholder={placeholder}
-        placeholderTextColor={placeholderTextColor ?? Colors.light.textTertiary}
+        placeholderTextColor={placeholderTextColor ?? Colors.light.textSecondary}
         keyboardType={keyboardType || "default"}
         autoCapitalize="words"
         value={formattedValue}
