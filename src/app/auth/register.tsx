@@ -2,7 +2,8 @@ import IconBack from '@/components/IconBack/IconBack'
 import { Input } from '@/components/Inputs/Input'
 import { InputPassword } from '@/components/Inputs/InputPassword'
 import { Colors } from '@/constants/Colors'
-import { useUser } from '@/contexts'
+import { useUserContext } from '@/contexts'
+import { register } from '@/services/usuario-services'
 import { useRouter } from 'expo-router'
 import React, { useState } from 'react'
 import {
@@ -21,10 +22,11 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 
 export default function Register() {
   const router = useRouter()
-  const { signIn } = useUser()
+  const { setUser } = useUserContext()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [username, setUsername] = useState('')
   const [nameFocused, setNameFocused] = useState(false)
   const [emailFocused, setEmailFocused] = useState(false)
   const [passwordFocused, setPasswordFocused] = useState(false)
@@ -37,21 +39,30 @@ export default function Register() {
     }
 
     setIsLoading(true);
-
     try {
-      const newUser = {
-        id: Date.now().toString(),
-        name: name,
-        email: email,
-      };
+      await register(name, username, email, password).then(() => {
+        Alert.alert(
+        'Sucesso', 
+        'Conta criada com sucesso! Agora você pode fazer login.',
+        [
+          {
+            text: 'OK',
+            onPress: () => router.push('/auth/login')
+          }
+        ]
+      );
+      });
       
-      const mockToken = 'mock-jwt-token-' + Date.now();
-      const mockRefreshToken = 'mock-refresh-token-' + Date.now();
-
-      await signIn(newUser, mockToken, mockRefreshToken);
+    } catch (error: any) {
+      let errorMessage = 'Falha ao criar conta. Tente novamente.';
       
-    } catch (error) {
-      Alert.alert('Erro', 'Falha ao criar conta. Tente novamente.');
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      Alert.alert('Erro', errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -63,6 +74,10 @@ export default function Register() {
 
   const handleChangeName = (text: string) => {
     setName(text)
+  }
+
+  const handleChangeUsername = (text: string) => {
+    setUsername(text)
   }
 
   const handleChangeEmail = (text: string) => {
@@ -100,13 +115,23 @@ export default function Register() {
               <View style={styles.viewInput}>
                 <Input 
                   label='Nome' 
+                  placeholder='Digite seu nome completo'
                   id='name-input' 
                   type='text'
                   value={name}
                   onChange={handleChangeName}
                 />
                 <Input 
+                  label='Nome de Usuário' 
+                  placeholder='Escolha um nome de usuário'
+                  id='username-input' 
+                  type='text'
+                  value={username}
+                  onChange={handleChangeUsername}
+                />
+                <Input 
                   label='Email' 
+                  placeholder='Digite seu email'
                   id='email-input' 
                   type='email'
                   value={email}
@@ -118,8 +143,14 @@ export default function Register() {
                   value={password}
                   onChange={handleChangePassword}
                 />
-                <TouchableOpacity style={styles.button} onPress={handleRegister}>
-                  <Text style={styles.buttonText}>Concluir</Text>
+                <TouchableOpacity 
+                  style={[styles.button, isLoading && styles.buttonDisabled]} 
+                  onPress={handleRegister}
+                  disabled={isLoading}
+                >
+                  <Text style={styles.buttonText}>
+                    {isLoading ? 'Criando conta...' : 'Concluir'}
+                  </Text>
                 </TouchableOpacity>
               </View>
 
@@ -186,6 +217,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderColor: Colors.light.black
+  },
+  buttonDisabled: {
+    backgroundColor: Colors.light.bgGray,
+    opacity: 0.6
   },
   buttonText: {
     fontFamily: 'Montserrat-SemiBold',

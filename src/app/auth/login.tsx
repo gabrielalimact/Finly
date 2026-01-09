@@ -2,7 +2,8 @@ import IconBack from '@/components/IconBack/IconBack'
 import { Input } from '@/components/Inputs/Input'
 import { InputPassword } from '@/components/Inputs/InputPassword'
 import { Colors } from '@/constants/Colors'
-import { useUser } from '@/contexts'
+import { useUserContext } from '@/contexts'
+import { login } from '@/services/auth-service'
 import { useRouter } from 'expo-router'
 import React, { useState } from 'react'
 import {
@@ -21,13 +22,13 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 
 export default function Login() {
   const router = useRouter()
-  const { signIn } = useUser()
-  const [email, setEmail] = useState('')
+  const { setUser } = useUserContext()
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
   async function handleLogin() {
-    if (!email || !password) {
+    if (!username || !password) {
       Alert.alert('Erro', 'Por favor, preencha todos os campos.');
       return;
     }
@@ -35,30 +36,31 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      const mockUser = {
-        id: '1',
-        name: 'Gabriela Cena',
-        email: email,
-      };
+      await login(username, password).then((res) => {
+        setUser({
+          id: res.user.id,
+          username: res.user.username,
+          name: res.user.nome,
+          email: res.user.email
+        });
+        router.replace('/(tabs)');
+      });
+    } catch (error: any) {
+      let errorMessage = 'Falha ao fazer login. Tente novamente.';
       
-      const mockToken = 'mock-jwt-token-' + Date.now();
-      const mockRefreshToken = 'mock-refresh-token-' + Date.now();
-
-      await signIn(mockUser, mockToken, mockRefreshToken);
-      
-    } catch (error) {
-      Alert.alert('Erro', 'Falha ao fazer login. Tente novamente.');
+      Alert.alert('Erro', errorMessage);
     } finally {
       setIsLoading(false);
     }
+
   }
 
   function handleGoBack() {
     router.back()
   }
 
-  const handleChangeEmail = (text: string) => {
-    setEmail(text)
+  const handleChangeUsername = (text: string) => {
+    setUsername(text)
   }
 
   const handleChangePassword = (text: string) => {
@@ -91,21 +93,28 @@ export default function Login() {
 
               <View style={styles.viewInput}>
                 <Input 
-                  label='Email' 
-                  id='email-input' 
-                  placeholder='example@email.com' 
-                  type='email' 
-                  value={email}
-                  onChange={handleChangeEmail}
+                  label='Username' 
+                  id='username-input' 
+                  placeholder='digite seu nome de usuário' 
+                  type='text' 
+                  value={username}
+                  onChange={handleChangeUsername}
                 />
                 <InputPassword 
                   label='Senha' 
                   id='password-input' 
+                  placeholder='digite sua senha'
                   value={password}
                   onChange={handleChangePassword} 
                 />
-                <TouchableOpacity style={styles.button} onPress={handleLogin}>
-                  <Text style={styles.buttonText}>Entrar</Text>
+                <TouchableOpacity 
+                  style={[styles.button, isLoading && styles.buttonDisabled]} 
+                  onPress={handleLogin}
+                  disabled={isLoading}
+                >
+                  <Text style={styles.buttonText}>
+                    {isLoading ? 'Entrando...' : 'Entrar'}
+                  </Text>
                 </TouchableOpacity>
               </View>
               <TouchableOpacity onPress={() => router.push('/auth/register')}>
@@ -171,6 +180,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderColor: Colors.light.black
+  },
+  buttonDisabled: {
+    backgroundColor: Colors.light.bgGray,
+    opacity: 0.6
   },
   buttonText: {
     fontFamily: 'Montserrat-SemiBold',
