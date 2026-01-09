@@ -31,6 +31,7 @@ export const InputPassword = ({ label, id, onChange, value }: InputProps) => {
       <TextInput
         style={[styles.input, inputFocused && styles.inputFocused]}
         placeholder="******"
+        placeholderTextColor={Colors.light.gray}
         id={id}
         value={currentValue}
         onChangeText={handleChange}

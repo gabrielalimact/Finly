@@ -39,7 +39,7 @@ export const CircularChart = ({ income, expenses, hideValues = false, selectedMo
   const formatDate = () => {
     const currentMonth = selectedMonth !== undefined ? selectedMonth : new Date().getMonth();
     const months = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
-    return `${months[currentMonth]}/2025`;
+    return `${months[currentMonth]}/2026`;
   };
 
   return (

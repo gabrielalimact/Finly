@@ -36,9 +36,9 @@ export const Input = ({ label, placeholder, placeholderTextColor, id, keyboardTy
       <TextInput
         style={[styles.input, inputFocused && styles.inputFocused, style]}
         placeholder={placeholder}
-        placeholderTextColor={placeholderTextColor ?? Colors.light.textSecondary}
+        placeholderTextColor={placeholderTextColor ?? Colors.light.gray}
         keyboardType={keyboardType || "default"}
-        autoCapitalize="words"
+        autoCapitalize="none"
         value={formattedValue}
         onChangeText={(value) => handleChange(value)}
         onFocus={() => setInputFocused(true)}
