@@ -2,25 +2,58 @@ import { CircularChart } from '@/components/CircularChart';
 import { MonthsList } from '@/components/MonthsList';
 import { TextStyled } from '@/components/TextStyled';
 import { Colors } from '@/constants/Colors';
-import { useUser } from '@/contexts';
+import { useUserContext } from '@/contexts';
+import { contasAPI, getCorFromConta, getInitialsFromConta, IConta } from '@/services/contas-service';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
+  FlatList,
   ScrollView,
   StyleSheet,
+  Text,
   TouchableOpacity,
   View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
-  const { user } = useUser()
+  const router = useRouter()
+  const { user } = useUserContext()
   const [eyeOpen, setEyeOpen] = useState(true)
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth())
+  const [contas, setContas] = useState<IConta[]>([])
+  const [loadingContas, setLoadingContas] = useState(false)
 
   const toggleMenu = () => {
     setEyeOpen(!eyeOpen)
   }
+
+  const handleChatPress = () => {
+    // Aqui podemos navegar para uma tela de chat com IA ou abrir um modal
+    console.log('Abrir chat IA')
+    // TODO: Implementar navegação para chat IA
+  }
+
+
+  // Carregar contas do usuário
+  const loadContas = async () => {
+    try {
+      setLoadingContas(true)
+      const contasData = await contasAPI.getContas()
+      setContas(contasData)
+    } catch (error) {
+      console.error('Erro ao carregar contas:', error)
+      // Em caso de erro, usar dados mockados vazios
+      setContas([])
+    } finally {
+      setLoadingContas(false)
+    }
+  }
+
+  useEffect(() => {
+    loadContas()
+  }, [])
 
   // Dados mockados por mês (Janeiro = 0, Dezembro = 11)
   const monthlyData = {
@@ -44,6 +77,64 @@ export default function HomeScreen() {
     setSelectedMonth(month)
   }
 
+  const formatCurrency = (value: number) => {
+    return value.toLocaleString('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    })
+  }
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
+  }
+
+  const renderAccountCard = ({ item }: { item: IConta }) => (
+    <View style={styles.accountCard}>
+      <View style={styles.accountHeader}>
+        <View style={[styles.accountIcon, { backgroundColor: getCorFromConta(item.nome) }]}>
+          <TextStyled 
+            text={getInitialsFromConta(item.nome)}
+            fontWeight="bold"
+            color="#fff"
+            type="caption"
+          />
+        </View>
+        <View style={styles.accountInfo}>
+          <Text style={styles.accountName}>{item.nome}</Text>
+        </View>
+      </View>
+    </View>
+  )
+
+  const renderTransactionItem = ({ item }: { item: any }) => (
+    <View style={styles.transactionCard}>
+      <View style={styles.transactionLeft}>
+        <View style={[styles.transactionIcon, { backgroundColor: item.type === 'income' ? Colors.light.green : Colors.light.darkRed }]}>
+          <Ionicons 
+            name={item.type === 'income' ? 'arrow-down' : 'arrow-up'} 
+            size={16} 
+            color="white" 
+          />
+        </View>
+        <View style={styles.transactionInfo}>
+          <Text style={styles.transactionDescription}>{item.description}</Text>
+          <Text style={styles.transactionDate}>{formatDate(item.date)} • {item.account}</Text>
+        </View>
+      </View>
+      <Text style={[styles.transactionAmount, { color: item.type === 'income' ? Colors.light.green : Colors.light.darkRed }]}>
+        {formatCurrency(item.amount)}
+      </Text>
+    </View>
+  )
+
+  const handleGoToTransactions = () => {
+    router.push('/transactions')
+  }
+
+  const handleAddTransaction = () => {
+    router.push('/new-transactions')
+  }
   useEffect(() => {
     setSelectedMonth(new Date().getMonth())
   }, [])
@@ -76,7 +167,7 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        <MonthsList year={2025} onMonthChange={handleMonthChange} />
+        <MonthsList year={2026} onMonthChange={handleMonthChange} />
         <View style={styles.content}>
           <CircularChart
             income={currentMonthData.income}
@@ -84,6 +175,51 @@ export default function HomeScreen() {
             hideValues={!eyeOpen}
             selectedMonth={selectedMonth}
           />
+        </View>
+        
+        <TouchableOpacity 
+          style={styles.addTransactionButton} 
+          onPress={() => router.push('/new-transactions')}
+        >
+          <View style={styles.addTransactionIcon}>
+            <Ionicons name="add" size={20} color="white" />
+          </View>
+          <Text style={styles.addTransactionText}>Adicionar transação</Text>
+          <Ionicons name="arrow-forward" size={18} color={Colors.light.green} />
+        </TouchableOpacity>
+
+        {/* Seção de Contas */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Minhas Contas</Text>
+            <TouchableOpacity onPress={() => router.push('/accounts')}>
+              <Text style={styles.sectionAction}>Ver todas</Text>
+            </TouchableOpacity>
+          </View>
+          <FlatList
+            data={contas}
+            renderItem={renderAccountCard}
+            keyExtractor={(item, index) => item.id?.toString() || index.toString()}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.accountsList}
+          />
+        </View>
+
+        {/* Seção de Transações Recentes */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Últimas Transações</Text>
+            <TouchableOpacity onPress={handleGoToTransactions}>
+              <Text style={styles.sectionAction}>Ver todas</Text>
+            </TouchableOpacity>
+          </View>
+          {/* <FlatList
+            data={recentTransactions.slice(0, 3)}
+            renderItem={renderTransactionItem}
+            keyExtractor={(item) => item.id.toString()}
+            scrollEnabled={false}
+          /> */}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -101,6 +237,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     padding: 20,
+    paddingBottom: 140, // Espaço extra para a bottom bar
   },
   topBar: {
     flexDirection: 'row',
@@ -129,6 +266,113 @@ const styles = StyleSheet.create({
     gap: 16,
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: 20,
+  },
+  // Estilos das seções
+  section: {
+    marginBottom: 25,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontFamily: 'Montserrat-SemiBold',
+    color: Colors.light.black,
+  },
+  sectionAction: {
+    fontSize: 14,
+    fontFamily: 'Montserrat-Medium',
+    color: Colors.light.green,
+  },
+  // Estilos dos cards de conta
+  accountsList: {
+    paddingRight: 20,
+  },
+  accountCard: {
+    backgroundColor: Colors.light.bgWhite,
+    borderRadius: 12,
+    padding: 16,
+    marginRight: 12,
+    minWidth: 160,
+    borderWidth: 1,
+    borderColor: Colors.light.border,
+  },
+  accountHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  accountIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 8,
+  },
+  accountInfo: {
+    flex: 1,
+  },
+  accountName: {
+    fontSize: 14,
+    fontFamily: 'Montserrat-SemiBold',
+    color: Colors.light.black,
+  },
+  bankName: {
+    fontSize: 12,
+    fontFamily: 'Montserrat-Regular',
+    color: Colors.light.textSecondary,
+  },
+  accountBalance: {
+    fontSize: 16,
+    fontFamily: 'Montserrat-Bold',
+    textAlign: 'right',
+  },
+  // Estilos dos cards de transação
+  transactionCard: {
+    backgroundColor: Colors.light.bgWhite,
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderWidth: 1,
+    borderColor: Colors.light.border,
+  },
+  transactionLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  transactionIcon: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  transactionInfo: {
+    flex: 1,
+  },
+  transactionDescription: {
+    fontSize: 14,
+    fontFamily: 'Montserrat-SemiBold',
+    color: Colors.light.black,
+  },
+  transactionDate: {
+    fontSize: 12,
+    fontFamily: 'Montserrat-Regular',
+    color: Colors.light.textSecondary,
+    marginTop: 2,
+  },
+  transactionAmount: {
+    fontSize: 14,
+    fontFamily: 'Montserrat-Bold',
   },
   balanceView: {
     flexDirection: 'row',
@@ -160,4 +404,40 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 4,
   },
+  // Estilos do botão de adicionar transação
+  addTransactionButton: {
+    backgroundColor: Colors.light.bgWhite,
+    borderRadius: 16,
+    padding: 18,
+    marginBottom: 25,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderWidth: 1,
+    borderColor: Colors.light.border,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  addTransactionIcon: {
+    backgroundColor: Colors.light.green,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  addTransactionText: {
+    flex: 1,
+    fontSize: 16,
+    fontFamily: 'Montserrat-SemiBold',
+    color: Colors.light.black,
+    marginLeft: 16,
+  },
+
 });

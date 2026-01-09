@@ -1,4 +1,4 @@
-import { UserProvider, useUser } from '@/contexts'
+import { UserProvider, useUserContext } from '@/contexts'
 import { useFonts } from 'expo-font'
 import { Stack, useRouter } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
@@ -8,7 +8,7 @@ import { SplashScreen } from './splash'
 
 function RootLayoutContent() {
   const router = useRouter()
-  const { isAuthenticated, isLoading } = useUser()
+  const { user } = useUserContext()
   const [loaded] = useFonts({
     'Montserrat-Bold': require('../assets/fonts/Montserrat-Bold.ttf'),
     'Montserrat-Medium': require('../assets/fonts/Montserrat-Medium.ttf'),
@@ -18,16 +18,17 @@ function RootLayoutContent() {
   })
 
   useEffect(() => {
-    if (loaded && !isLoading) {
-      if (isAuthenticated) {
+    if (loaded) {
+      if (user) {
         router.replace('/(tabs)')
       } else {
+        router.dismissAll()
         router.replace('/')
       }
     }
-  }, [loaded, isLoading, isAuthenticated])
+  }, [loaded, user])
 
-  if (!loaded || isLoading) {
+  if (!loaded) {
     return <SplashScreen />
   }
 
@@ -44,8 +45,12 @@ function RootLayoutContent() {
           name="auth"
         />
         <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="new-transaction/index" options={{
+        <Stack.Screen name="new-transactions/index" options={{
           presentation: 'modal',
+        }} />
+        <Stack.Screen name="accounts/index" options={{
+          presentation: 'modal',
+          title: 'Contas e Cartões'
         }} />
         <Stack.Screen name="+not-found" />
         <Stack.Screen

@@ -1,9 +1,11 @@
 import { Colors } from "@/constants/Colors"
 import { AntDesign, FontAwesome } from "@expo/vector-icons"
-import { Tabs } from "expo-router"
+import { Tabs, useRouter } from "expo-router"
 import { StyleSheet, View } from "react-native"
 
 export default function TabLayout() {
+  const router = useRouter()
+
   return (
     <View style={{ flex: 1 }}>
       <Tabs
@@ -44,17 +46,17 @@ export default function TabLayout() {
             ),
           }}
         />
-        <Tabs.Screen
-          name="new-transaction"
+        {/* <Tabs.Screen
+          name="add-transaction"
           options={{
-            title: "Nova Transação",
+            title: "Adicionar Transação",
             tabBarIcon: ({ color, focused }) => (
               <View style={[styles.tabIcon, focused && styles.activeTabIcon]}>
                 <FontAwesome name="plus" size={20} color={color} />
               </View>
             ),
           }}
-        />
+        /> */}
          <Tabs.Screen
           name="transactions"
           options={{
@@ -92,6 +94,13 @@ const styles = StyleSheet.create({
   },
   activeTabIcon: {
     backgroundColor: Colors.light.green,
+  },
+  addButton: {
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
   },
   floatingButton: {
     position: "absolute",
