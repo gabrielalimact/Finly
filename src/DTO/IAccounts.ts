@@ -1,10 +1,13 @@
-import { ITransaction } from './ITransactions'
-
 export interface IAccounts {
-  id: number
-  name: string
-  type: 'creditCard' | 'debitCard' | 'bankAccount'
-  userID: number
-  balance: number
-  transactions: ITransaction[]
+  id?: number
+  nome: string
+}
+
+export interface ICreateAccount {
+  nome: string
+}
+
+export interface IUpdateAccount {
+  id?: number
+  nome?: string
 }
