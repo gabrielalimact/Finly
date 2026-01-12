@@ -40,6 +40,11 @@ export interface ICreateTransacao {
   categoriaId?: number
 }
 
+export interface ICreateTransacaoIA {
+  texto: string
+  contaId: number
+}
+
 export interface ICreateCategoria {
   nome: string
   descricao?: string
@@ -203,6 +208,12 @@ export const transacoesAPI = {
       return response.data
     } catch (error: any) {
       console.error('Erro ao criar transação com IA:', error)
+      
+      // Se erro de autenticação, redirecionar para login
+      if (isAuthError(error)) {
+        handleAuthError(error)
+      }
+      
       throw new Error(error.response?.data?.message || 'Erro ao criar transação com IA')
     }
   }

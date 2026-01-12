@@ -1,6 +1,7 @@
 import { TextStyled } from '@/components/TextStyled'
 import { Colors } from '@/constants/Colors'
 import { useUserContext } from '@/contexts'
+import { notificationService } from '@/services/notification-service'
 import { Ionicons } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
 import { Alert, FlatList, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native'
@@ -40,13 +41,53 @@ export default function ProfileScreen() {
     router.push('/accounts')
   }
 
+  const handleNotificationSettings = async () => {
+    try {
+      const hasPermission = await notificationService.hasPermission();
+      
+      Alert.alert(
+        'Configurações de Notificação',
+        hasPermission 
+          ? 'Você receberá lembretes diários às 18h para atualizar seus dados financeiros.'
+          : 'As notificações estão desativadas. Você pode ativá-las para receber lembretes diários.',
+        [
+          { text: 'Cancelar', style: 'cancel' },
+          hasPermission 
+            ? {
+                text: 'Desativar',
+                style: 'destructive',
+                onPress: async () => {
+                  await notificationService.cancelDailyNotification();
+                  Alert.alert('Notificações Desativadas', 'Você não receberá mais lembretes diários.');
+                }
+              }
+            : {
+                text: 'Ativar',
+                onPress: async () => {
+                  const granted = await notificationService.requestPermission();
+                  if (granted) {
+                    await notificationService.scheduleDailyNotification();
+                    Alert.alert('Notificações Ativadas!', 'Você receberá lembretes diários às 18h.');
+                  } else {
+                    Alert.alert('Permissão Negada', 'Ative as notificações nas configurações do seu dispositivo.');
+                  }
+                }
+              }
+        ]
+      );
+    } catch (error) {
+      console.error('Erro ao gerenciar notificações:', error);
+      Alert.alert('Erro', 'Não foi possível alterar as configurações de notificação.');
+    }
+  }
+
   const profileSections = [
     {
       title: 'Dados Pessoais',
       items: [
         { icon: 'person-outline', title: 'Informações Pessoais', subtitle: 'Nome, email, telefone' },
         { icon: 'shield-outline', title: 'Segurança', subtitle: 'Senha, autenticação' },
-        { icon: 'notifications-outline', title: 'Notificações', subtitle: 'Alertas e lembretes' },
+        { icon: 'notifications-outline', title: 'Notificações', subtitle: 'Alertas e lembretes', onPress: handleNotificationSettings },
       ]
     },
     {

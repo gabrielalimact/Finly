@@ -30,9 +30,8 @@ export default function HomeScreen() {
   }
 
   const handleChatPress = () => {
-    // Aqui podemos navegar para uma tela de chat com IA ou abrir um modal
-    console.log('Abrir chat IA')
-    // TODO: Implementar navegação para chat IA
+    // Navegar para a tela de nova transação com IA
+    router.push('/new-transactions')
   }
 
 

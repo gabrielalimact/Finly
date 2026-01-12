@@ -3,8 +3,9 @@ import { Colors } from '@/constants/Colors';
 import { ITransacao, formatCurrency, formatDate, getTransacaoColor, transacoesAPI } from '@/services/transacoes-service';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
+import * as Haptics from 'expo-haptics';
 import { useCallback, useState } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, FlatList, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function TransactionsScreen() {
@@ -12,6 +13,11 @@ export default function TransactionsScreen() {
   const [transacoes, setTransacoes] = useState<ITransacao[]>([]);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [editTransaction, setEditTransaction] = useState<boolean>(false);
+
+  // Estados para o modal de edição
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedTransaction, setSelectedTransaction] = useState<ITransacao | null>(null);
 
   // Carregar transações
   const loadTransacoes = async () => {
@@ -41,7 +47,12 @@ export default function TransactionsScreen() {
     }
   };
 
-  // Usar useFocusEffect para recarregar quando a tela ganhar foco
+  const handleEditTransaction = (transaction: ITransacao) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    setSelectedTransaction(transaction);
+    setModalVisible(true);
+  }
+
   useFocusEffect(
     useCallback(() => {
       loadTransacoes();
@@ -52,8 +63,13 @@ export default function TransactionsScreen() {
     ? transacoes 
     : transacoes.filter(t => t.tipo === selectedFilter);
 
+  const closeModal = () => {
+    setModalVisible(false);
+    setSelectedTransaction(null);
+  };
+
   const renderTransactionItem = ({ item }: { item: ITransacao }) => (
-    <View style={styles.transactionCard}>
+    <TouchableOpacity style={styles.transactionCard} onPress={() => handleEditTransaction(item)}>
       <View style={styles.transactionLeft}>
         <View style={[styles.transactionIcon, { backgroundColor: getTransacaoColor(item.tipo, Colors.light) }]}>
           <Ionicons 
@@ -76,7 +92,7 @@ export default function TransactionsScreen() {
       <Text style={[styles.transactionAmount, { color: getTransacaoColor(item.tipo, Colors.light) }]}>
         {formatCurrency(item.valor)}
       </Text>
-    </View>
+    </TouchableOpacity>
   );
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -146,6 +162,92 @@ export default function TransactionsScreen() {
           />
         )}
       </View>
+
+      <Modal
+        visible={modalVisible}
+        animationType="slide"
+        presentationStyle='pageSheet'
+        onRequestClose={closeModal}
+      >
+        <SafeAreaView style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
+            <TouchableOpacity onPress={closeModal} style={styles.closeButton}>
+              <Ionicons name="close" size={24} color={Colors.light.black} />
+            </TouchableOpacity>
+            <Text style={styles.modalTitle}>Editar Transação</Text>
+            <View style={{ width: 24 }} />
+          </View>
+
+          {selectedTransaction && (
+            <View style={styles.modalContent}>
+              <View style={styles.transactionPreview}>
+                <View style={[styles.previewIcon, { backgroundColor: getTransacaoColor(selectedTransaction.tipo, Colors.light) }]}>
+                  <Ionicons 
+                    name={selectedTransaction.tipo === 'receita' ? 'arrow-down' : 'arrow-up'} 
+                    size={24} 
+                    color="white" 
+                  />
+                </View>
+                <View style={styles.previewInfo}>
+                  <Text style={styles.previewDescription}>{selectedTransaction.descricao}</Text>
+                  <Text style={styles.previewAmount}>{formatCurrency(selectedTransaction.valor)}</Text>
+                  <Text style={styles.previewDetails}>
+                    {formatDate(selectedTransaction.dataTransacao)} • {selectedTransaction.conta.nome}
+                  </Text>
+                  {selectedTransaction.categoria && (
+                    <Text style={styles.previewCategory}>{selectedTransaction.categoria.nome}</Text>
+                  )}
+                </View>
+              </View>
+            {editTransaction ? <View>
+              {/* Aqui você pode colocar o formulário de edição da transação */}
+              <Text>Formulário de Edição</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Descrição"
+                value={selectedTransaction.descricao}
+                onChangeText={(text) => setSelectedTransaction({ ...selectedTransaction, descricao: text })}
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="Valor"
+                value={selectedTransaction.valor.toString()}
+                onChangeText={(text) => setSelectedTransaction({ ...selectedTransaction, valor: parseFloat(text) })}
+                keyboardType="numeric"
+              />
+              <TouchableOpacity onPress={()=>{}} style={styles.saveButton}>
+                <Text style={styles.saveButtonText}>Salvar</Text>
+              </TouchableOpacity>
+            </View>:
+              <View style={styles.modalActions}>
+                <TouchableOpacity 
+                  style={styles.actionButton}
+                  onPress={() => {
+                    console.log('Editar transação:', selectedTransaction.id);
+                    setEditTransaction(true);
+                  }}
+                >
+                  <Ionicons name="create-outline" size={20} color={Colors.light.green} />
+                  <Text style={styles.actionButtonText}>Editar</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity 
+                  style={[styles.actionButton, styles.deleteButton]}
+                  onPress={() => {
+                    console.log('Excluir transação:', selectedTransaction.id);
+                    // Implementar confirmação de exclusão
+                  }}
+                >
+                  <Ionicons name="trash-outline" size={20} color={Colors.light.darkRed} />
+                  <Text style={[styles.actionButtonText, styles.deleteButtonText]}>Excluir</Text>
+                </TouchableOpacity>
+              </View>
+            }
+            </View>
+          )}
+          
+        </SafeAreaView>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -278,4 +380,117 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 20,
   },
+  // Estilos do Modal
+  modalContainer: {
+    flex: 1,
+    backgroundColor: Colors.light.bgPrimary,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    backgroundColor: Colors.light.bgWhite,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.light.border,
+  },
+  closeButton: {
+    padding: 4,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontFamily: 'Montserrat-Bold',
+    color: Colors.light.black,
+  },
+  modalContent: {
+    flex: 1,
+    padding: 20,
+  },
+  transactionPreview: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.light.bgWhite,
+    borderRadius: 16,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: Colors.light.border,
+    marginBottom: 24,
+  },
+  previewIcon: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 16,
+  },
+  previewInfo: {
+    flex: 1,
+  },
+  previewDescription: {
+    fontSize: 18,
+    fontFamily: 'Montserrat-Bold',
+    color: Colors.light.black,
+    marginBottom: 4,
+  },
+  previewAmount: {
+    fontSize: 24,
+    fontFamily: 'Montserrat-Bold',
+    color: Colors.light.black,
+    marginBottom: 4,
+  },
+  previewDetails: {
+    fontSize: 14,
+    fontFamily: 'Montserrat-Regular',
+    color: Colors.light.textSecondary,
+    marginBottom: 4,
+  },
+  previewCategory: {
+    fontSize: 13,
+    fontFamily: 'Montserrat-Medium',
+    color: Colors.light.green,
+  },
+  modalActions: {
+    gap: 12,
+  },
+  actionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.light.bgWhite,
+    borderRadius: 12,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: Colors.light.border,
+    gap: 12,
+  },
+  deleteButton: {
+    borderColor: Colors.light.lightRed,
+    backgroundColor: Colors.light.lightRed + '10',
+  },
+  actionButtonText: {
+    fontSize: 16,
+    fontFamily: 'Montserrat-SemiBold',
+    color: Colors.light.black,
+  },
+  deleteButtonText: {
+    color: Colors.light.darkRed,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: Colors.light.border,
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 12,
+  },
+  saveButton: {
+    backgroundColor: Colors.light.green,
+    borderRadius: 8,
+    padding: 12,
+  },
+  saveButtonText: {
+    color: Colors.light.text,
+    textAlign: 'center',
+  },
+  
 });
