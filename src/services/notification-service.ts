@@ -1,7 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Device from 'expo-device';
+import * as Haptics from 'expo-haptics';
 import * as Notifications from 'expo-notifications';
-import { Platform } from 'react-native';
+import { Alert, Platform } from 'react-native';
+import { IMeta } from './metas-service';
 
 const NOTIFICATION_PERMISSION_KEY = 'notification_permission_requested';
 const DAILY_NOTIFICATION_ID = 'daily_update_notification';
@@ -147,6 +149,116 @@ export const handleNotificationReceived = (notification: Notifications.Notificat
   // Aqui você pode adicionar lógica adicional se necessário
 };
 
+/**
+ * Exibe uma notificação comemorativa quando uma meta é concluída
+ * @param meta Meta que foi concluída
+ */
+export const showMetaConcluida = async (meta: IMeta) => {
+  try {
+    // Executa feedback háptico para celebração
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    
+    // Agenda notificação imediata
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: '🎉 Meta Concluída!',
+        body: `Parabéns! Você atingiu sua meta "${meta.nome}"! 🏆`,
+        data: { 
+          type: 'META_CONCLUIDA',
+          metaId: meta.id,
+          metaNome: meta.nome 
+        },
+        sound: true,
+        priority: Notifications.AndroidNotificationPriority.HIGH,
+      },
+      trigger: null, // Notificação imediata
+    });
+
+    // Exibe alerta visual também
+    Alert.alert(
+      '🎉 Meta Concluída!',
+      `Parabéns! Você atingiu sua meta "${meta.nome}"!\n\nContinue assim, você está indo muito bem! 🏆`,
+      [
+        {
+          text: 'Continuar',
+          style: 'default',
+          onPress: () => {
+            // Segunda vibração de celebração
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+          },
+        },
+      ]
+    );
+
+    console.log(`✅ Notificação de meta concluída enviada: ${meta.nome}`);
+  } catch (error) {
+    console.error('❌ Erro ao exibir notificação de meta concluída:', error);
+  }
+};
+
+/**
+ * Exibe notificações para múltiplas metas concluídas simultaneamente
+ * @param metas Array de metas que foram concluídas
+ */
+export const showMultiplasMetasConcluidas = async (metas: IMeta[]) => {
+  try {
+    if (metas.length === 0) return;
+
+    // Executa feedback háptico para múltiplas celebrações
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    
+    if (metas.length === 1) {
+      // Se for apenas uma meta, usa o método individual
+      await showMetaConcluida(metas[0]);
+      return;
+    }
+
+    const nomesMetas = metas.map(meta => `"${meta.nome}"`).join(', ');
+    
+    // Agenda notificação para múltiplas metas
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: '🎊 Múltiplas Metas Concluídas!',
+        body: `Incrível! Você concluiu ${metas.length} metas: ${nomesMetas}`,
+        data: { 
+          type: 'MULTIPLAS_METAS_CONCLUIDAS',
+          metasIds: metas.map(m => m.id),
+          quantidade: metas.length
+        },
+        sound: true,
+        priority: Notifications.AndroidNotificationPriority.HIGH,
+      },
+      trigger: null,
+    });
+
+    // Exibe alerta para múltiplas metas
+    Alert.alert(
+      '🎊 Múltiplas Metas Concluídas!',
+      `Incrível! Você concluiu ${metas.length} metas hoje:\n\n${metas.map(m => `• ${m.nome}`).join('\n')}\n\nVocê está arrasando! Continue assim! 🚀`,
+      [
+        {
+          text: 'Celebrar! 🎉',
+          style: 'default',
+          onPress: async () => {
+            // Sequência de vibrações para celebração especial
+            await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+            setTimeout(async () => {
+              await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            }, 200);
+            setTimeout(async () => {
+              await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            }, 400);
+          },
+        },
+      ]
+    );
+
+    console.log(`✅ Notificação de múltiplas metas concluídas enviada: ${metas.length} metas`);
+  } catch (error) {
+    console.error('❌ Erro ao exibir notificações de múltiplas metas concluídas:', error);
+  }
+};
+
 // Função para lidar com toques em notificações
 export const handleNotificationResponse = (response: Notifications.NotificationResponse) => {
   console.log('Usuário tocou na notificação:', response);
@@ -155,5 +267,11 @@ export const handleNotificationResponse = (response: Notifications.NotificationR
   if (data?.type === 'daily_reminder') {
     // Aqui você pode navegar para uma tela específica ou executar uma ação
     console.log('Abrir app para atualizar dados');
+  } else if (data?.type === 'META_CONCLUIDA') {
+    console.log('Usuário tocou na notificação de meta concluída:', data.metaNome);
+    // Pode navegar para a tela de metas ou exibir detalhes
+  } else if (data?.type === 'MULTIPLAS_METAS_CONCLUIDAS') {
+    console.log('Usuário tocou na notificação de múltiplas metas concluídas');
+    // Pode navegar para a tela de metas
   }
 };

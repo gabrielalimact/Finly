@@ -45,6 +45,14 @@ export interface ICreateTransacaoIA {
   contaId: number
 }
 
+export interface IUpdateTransacao {
+  descricao?: string
+  valor?: number
+  tipo?: 'receita' | 'despesa'
+  contaId?: number
+  categoriaId?: number
+}
+
 export interface ICreateCategoria {
   nome: string
   descricao?: string
@@ -155,6 +163,23 @@ export const transacoesAPI = {
       
       throw new Error(error.response?.data?.message || 'Erro ao buscar transações')
     }
+  },  
+  
+  async getLastThree(contaId?: number): Promise<ITransacao[]> {
+    try {
+      const url = contaId ? `/transacoes?contaId=${contaId}&limit=3` : '/transacoes?limit=3'
+      const response = await api.get(url)
+      return response.data
+    } catch (error: any) {
+      console.error('Erro ao buscar transações:', error)
+      
+      // Se erro de autenticação, redirecionar para login
+      if (isAuthError(error)) {
+        handleAuthError(error)
+      }
+      
+      throw new Error(error.response?.data?.message || 'Erro ao buscar transações')
+    }
   },
 
   // Buscar transação por ID
@@ -165,6 +190,22 @@ export const transacoesAPI = {
     } catch (error: any) {
       console.error('Erro ao buscar transação:', error)
       throw new Error(error.response?.data?.message || 'Erro ao buscar transação')
+    }
+  },
+
+  // Atualizar transação
+  async update(id: string, transacao: IUpdateTransacao): Promise<ITransacao> {
+    try {
+      const response = await api.put(`/transacoes/${id}`, transacao)
+      return response.data
+    } catch (error: any) {
+      console.error('Erro ao atualizar transação:', error)
+      
+      if (isAuthError(error)) {
+        handleAuthError(error)
+      }
+      
+      throw new Error(error.response?.data?.message || 'Erro ao atualizar transação')
     }
   },
 
@@ -321,4 +362,8 @@ export const addTransacao = async (
 
 export const deleteTransacao = async (id: string) => {
   return await transacoesAPI.delete(id)
+}
+
+export const updateTransacao = async (id: string, transacao: IUpdateTransacao) => {
+  return await transacoesAPI.update(id, transacao)
 }
