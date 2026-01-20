@@ -1,25 +1,24 @@
 import { TextStyled } from '@/components/TextStyled';
 import { Colors } from '@/constants/Colors';
-import { ITransacao, formatCurrency, formatDate, getTransacaoColor, transacoesAPI } from '@/services/transacoes-service';
+import { ITransacao, deleteTransacao, formatCurrency, formatDate, getTransacaoColor, transacoesAPI } from '@/services/transacoes-service';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
+import { useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { ActivityIndicator, FlatList, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, FlatList, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function TransactionsScreen() {
+  const router = useRouter();
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'receita' | 'despesa'>('all');
   const [transacoes, setTransacoes] = useState<ITransacao[]>([]);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [editTransaction, setEditTransaction] = useState<boolean>(false);
 
-  // Estados para o modal de edição
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<ITransacao | null>(null);
 
-  // Carregar transações
   const loadTransacoes = async () => {
     try {
       setLoading(true);
@@ -27,14 +26,12 @@ export default function TransactionsScreen() {
       setTransacoes(data);
     } catch (error) {
       console.error('Erro ao carregar transações:', error);
-      // Em caso de erro, manter array vazio
       setTransacoes([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // Função para refresh separada
   const handleRefresh = async () => {
     try {
       setRefreshing(true);
@@ -49,9 +46,52 @@ export default function TransactionsScreen() {
 
   const handleEditTransaction = (transaction: ITransacao) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    setSelectedTransaction(transaction);
-    setModalVisible(true);
+    
+    router.push({
+      pathname: '/manual-transaction',
+      params: { 
+        transactionId: transaction.id.toString(),
+        description: transaction.descricao,
+        amount: transaction.valor.toString(),
+        type: transaction.tipo,
+        accountId: transaction.conta.id.toString(),
+        categoryId: transaction.categoria?.id.toString() || '',
+      }
+    });
   }
+
+  const handleDeleteTransaction = async () => {
+    if (!selectedTransaction) return;
+
+    try {
+      await deleteTransacao(selectedTransaction.id);
+      closeModal();
+      loadTransacoes();
+      
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    } catch (error) {
+      console.error('Erro ao deletar transação:', error);
+      Alert.alert('Erro', 'Erro ao excluir transação. Tente novamente.');
+    }
+  };
+
+  const confirmDelete = () => {
+    Alert.alert(
+      'Confirmar Exclusão',
+      'Tem certeza que deseja excluir esta transação? Esta ação não pode ser desfeita.',
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+        },
+        {
+          text: 'Excluir',
+          style: 'destructive',
+          onPress: handleDeleteTransaction,
+        },
+      ]
+    );
+  };
 
   useFocusEffect(
     useCallback(() => {
@@ -79,7 +119,7 @@ export default function TransactionsScreen() {
           />
         </View>
         <View style={styles.transactionInfo}>
-          <Text style={styles.transactionDescription}>{item.descricao}</Text>
+          <Text style={styles.transactionDescription}>{item.descricao.toUpperCase()}</Text>
           <Text style={styles.transactionDetails}>
             {formatDate(item.dataTransacao)} • {item.conta.nome}
             {item.quantidadeParcelas > 1 && ` (${item.parcelaAtual}/${item.quantidadeParcelas})`}
@@ -90,7 +130,7 @@ export default function TransactionsScreen() {
         </View>
       </View>
       <Text style={[styles.transactionAmount, { color: getTransacaoColor(item.tipo, Colors.light) }]}>
-        {formatCurrency(item.valor)}
+        R$ {formatCurrency(item.valor)}
       </Text>
     </TouchableOpacity>
   );
@@ -199,32 +239,14 @@ export default function TransactionsScreen() {
                   )}
                 </View>
               </View>
-            {editTransaction ? <View>
-              {/* Aqui você pode colocar o formulário de edição da transação */}
-              <Text>Formulário de Edição</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Descrição"
-                value={selectedTransaction.descricao}
-                onChangeText={(text) => setSelectedTransaction({ ...selectedTransaction, descricao: text })}
-              />
-              <TextInput
-                style={styles.input}
-                placeholder="Valor"
-                value={selectedTransaction.valor.toString()}
-                onChangeText={(text) => setSelectedTransaction({ ...selectedTransaction, valor: parseFloat(text) })}
-                keyboardType="numeric"
-              />
-              <TouchableOpacity onPress={()=>{}} style={styles.saveButton}>
-                <Text style={styles.saveButtonText}>Salvar</Text>
-              </TouchableOpacity>
-            </View>:
+
               <View style={styles.modalActions}>
                 <TouchableOpacity 
                   style={styles.actionButton}
                   onPress={() => {
-                    console.log('Editar transação:', selectedTransaction.id);
-                    setEditTransaction(true);
+                    closeModal();
+                    // A função handleEditTransaction já navega para a tela de edição
+                    handleEditTransaction(selectedTransaction);
                   }}
                 >
                   <Ionicons name="create-outline" size={20} color={Colors.light.green} />
@@ -233,16 +255,12 @@ export default function TransactionsScreen() {
 
                 <TouchableOpacity 
                   style={[styles.actionButton, styles.deleteButton]}
-                  onPress={() => {
-                    console.log('Excluir transação:', selectedTransaction.id);
-                    // Implementar confirmação de exclusão
-                  }}
+                  onPress={confirmDelete}
                 >
                   <Ionicons name="trash-outline" size={20} color={Colors.light.darkRed} />
                   <Text style={[styles.actionButtonText, styles.deleteButtonText]}>Excluir</Text>
                 </TouchableOpacity>
               </View>
-            }
             </View>
           )}
           
@@ -482,15 +500,50 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 12,
     marginBottom: 12,
+    fontSize: 16,
+    fontFamily: 'Montserrat-Regular',
+  },
+  editForm: {
+    gap: 16,
+  },
+  formLabel: {
+    fontSize: 16,
+    fontFamily: 'Montserrat-SemiBold',
+    color: Colors.light.black,
+    marginBottom: 8,
+  },
+  formButtons: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 16,
+  },
+  cancelButton: {
+    flex: 1,
+    backgroundColor: Colors.light.bgGray,
+    borderRadius: 8,
+    padding: 12,
+    alignItems: 'center',
+  },
+  cancelButtonText: {
+    fontSize: 16,
+    fontFamily: 'Montserrat-SemiBold',
+    color: Colors.light.textSecondary,
   },
   saveButton: {
+    flex: 1,
     backgroundColor: Colors.light.green,
     borderRadius: 8,
     padding: 12,
+    alignItems: 'center',
   },
   saveButtonText: {
-    color: Colors.light.text,
+    fontSize: 16,
+    fontFamily: 'Montserrat-SemiBold',
+    color: Colors.light.bgWhite,
     textAlign: 'center',
   },
   
 });
+
+
+
