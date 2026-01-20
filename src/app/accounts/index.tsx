@@ -104,7 +104,6 @@ export default function ContasScreen() {
 
       setModalVisible(false)
       await loadContas()
-      Alert.alert('Sucesso', editingConta ? 'Conta atualizada!' : 'Conta criada!')
     } catch (error: any) {
       if (error.message.includes('sessão expirou') || error.message.includes('fazer login')) {
         setModalVisible(false)
@@ -140,7 +139,6 @@ export default function ContasScreen() {
               setLoading(true)
               await contasAPI.deleteConta(conta.id!)
               await loadContas()
-              Alert.alert('Sucesso', 'Conta excluída!')
             } catch (error: any) {
               Alert.alert('Erro', error.message || 'Falha ao excluir conta')
             } finally {

@@ -46,17 +46,6 @@ export default function TabLayout() {
             ),
           }}
         />
-        {/* <Tabs.Screen
-          name="add-transaction"
-          options={{
-            title: "Adicionar Transação",
-            tabBarIcon: ({ color, focused }) => (
-              <View style={[styles.tabIcon, focused && styles.activeTabIcon]}>
-                <FontAwesome name="plus" size={20} color={color} />
-              </View>
-            ),
-          }}
-        /> */}
          <Tabs.Screen
           name="transactions"
           options={{
@@ -64,6 +53,17 @@ export default function TabLayout() {
             tabBarIcon: ({ color, focused }) => (
               <View style={[styles.tabIcon, focused && styles.activeTabIcon]}>
                 <FontAwesome name="exchange" size={20} color={color} />
+              </View>
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="metas"
+          options={{
+            title: "Metas",
+            tabBarIcon: ({ color, focused }) => (
+              <View style={[styles.tabIcon, focused && styles.activeTabIcon]}>
+                <FontAwesome name="bullseye" size={20} color={color} />
               </View>
             ),
           }}

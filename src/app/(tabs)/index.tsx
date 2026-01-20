@@ -4,6 +4,7 @@ import { TextStyled } from '@/components/TextStyled';
 import { Colors } from '@/constants/Colors';
 import { useUserContext } from '@/contexts';
 import { contasAPI, getCorFromConta, getInitialsFromConta, IConta } from '@/services/contas-service';
+import { ITransacao, transacoesAPI } from '@/services/transacoes-service';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -24,18 +25,13 @@ export default function HomeScreen() {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth())
   const [contas, setContas] = useState<IConta[]>([])
   const [loadingContas, setLoadingContas] = useState(false)
+  const [transacoes, setTransacoes] = useState<ITransacao[]>([])
+  const [loadingTransacoes, setLoadingTransacoes] = useState(false)
 
   const toggleMenu = () => {
     setEyeOpen(!eyeOpen)
   }
 
-  const handleChatPress = () => {
-    // Navegar para a tela de nova transação com IA
-    router.push('/new-transactions')
-  }
-
-
-  // Carregar contas do usuário
   const loadContas = async () => {
     try {
       setLoadingContas(true)
@@ -50,8 +46,23 @@ export default function HomeScreen() {
     }
   }
 
+  const loadTransacoes = async () => {
+    try {
+      setLoadingTransacoes(true)
+      const transacoesData = await transacoesAPI.getLastThree()
+      setTransacoes(transacoesData)
+    } catch (error) {
+      console.error('Erro ao carregar transações:', error)
+      // Em caso de erro, usar dados mockados vazios
+      setTransacoes([])
+    } finally {
+      setLoadingTransacoes(false)
+    }
+  }
+
   useEffect(() => {
     loadContas()
+    loadTransacoes()
   }, [])
 
   // Dados mockados por mês (Janeiro = 0, Dezembro = 11)
@@ -106,23 +117,23 @@ export default function HomeScreen() {
     </View>
   )
 
-  const renderTransactionItem = ({ item }: { item: any }) => (
+  const renderTransactionItem = ({ item }: { item: ITransacao }) => (
     <View style={styles.transactionCard}>
       <View style={styles.transactionLeft}>
-        <View style={[styles.transactionIcon, { backgroundColor: item.type === 'income' ? Colors.light.green : Colors.light.darkRed }]}>
+        <View style={[styles.transactionIcon, { backgroundColor: item.tipo === 'receita' ? Colors.light.green : Colors.light.darkRed }]}>
           <Ionicons 
-            name={item.type === 'income' ? 'arrow-down' : 'arrow-up'} 
+            name={item.tipo === 'receita' ? 'arrow-down' : 'arrow-up'} 
             size={16} 
             color="white" 
           />
         </View>
         <View style={styles.transactionInfo}>
-          <Text style={styles.transactionDescription}>{item.description}</Text>
-          <Text style={styles.transactionDate}>{formatDate(item.date)} • {item.account}</Text>
+          <Text style={styles.transactionDescription}>{item.descricao}</Text>
+          <Text style={styles.transactionDate}>{formatDate(item.dataTransacao)} • {item.conta.nome}</Text>
         </View>
       </View>
-      <Text style={[styles.transactionAmount, { color: item.type === 'income' ? Colors.light.green : Colors.light.darkRed }]}>
-        {formatCurrency(item.amount)}
+      <Text style={[styles.transactionAmount, { color: item.tipo === 'receita' ? Colors.light.green : Colors.light.darkRed }]}>
+        R$ {formatCurrency(item.valor)}
       </Text>
     </View>
   )
@@ -132,7 +143,7 @@ export default function HomeScreen() {
   }
 
   const handleAddTransaction = () => {
-    router.push('/new-transactions')
+    router.push('/new-transactions-ia')
   }
   useEffect(() => {
     setSelectedMonth(new Date().getMonth())
@@ -178,7 +189,7 @@ export default function HomeScreen() {
         
         <TouchableOpacity 
           style={styles.addTransactionButton} 
-          onPress={() => router.push('/new-transactions')}
+          onPress={handleAddTransaction}
         >
           <View style={styles.addTransactionIcon}>
             <Ionicons name="add" size={20} color="white" />
@@ -192,7 +203,7 @@ export default function HomeScreen() {
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Minhas Contas</Text>
             <TouchableOpacity onPress={() => router.push('/accounts')}>
-              <Text style={styles.sectionAction}>Ver todas</Text>
+              <Text style={styles.sectionAction}>{contas.length > 0 ? 'Ver todas' : 'Adicionar conta'}</Text>
             </TouchableOpacity>
           </View>
           <FlatList
@@ -202,23 +213,24 @@ export default function HomeScreen() {
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.accountsList}
+            ListEmptyComponent={<Text style={styles.emptyListText}>Nenhuma conta encontrada.</Text>}
           />
         </View>
 
-        {/* Seção de Transações Recentes */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Últimas Transações</Text>
             <TouchableOpacity onPress={handleGoToTransactions}>
-              <Text style={styles.sectionAction}>Ver todas</Text>
+              <Text style={styles.sectionAction}>{transacoes.length > 0 ? 'Ver todas' : ''}</Text>
             </TouchableOpacity>
           </View>
-          {/* <FlatList
-            data={recentTransactions.slice(0, 3)}
+          <FlatList
+            data={transacoes}
             renderItem={renderTransactionItem}
             keyExtractor={(item) => item.id.toString()}
             scrollEnabled={false}
-          /> */}
+            ListEmptyComponent={<Text style={styles.emptyListText}>Nenhuma transação encontrada.</Text>}
+          />
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -438,5 +450,9 @@ const styles = StyleSheet.create({
     color: Colors.light.black,
     marginLeft: 16,
   },
-
+  emptyListText: {
+    fontSize: 16,
+    fontFamily: 'Montserrat-Regular',
+    color: Colors.light.textSecondary,
+  },
 });

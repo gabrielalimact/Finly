@@ -112,9 +112,10 @@ function RootLayoutContent() {
           name="auth"
         />
         <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="new-transactions/index" options={{
+        <Stack.Screen name="new-transactions-ia/index" options={{
           presentation: 'modal',
         }} />
+        <Stack.Screen name="manual-transaction/index"/>
         <Stack.Screen name="accounts/index" options={{
           presentation: 'modal',
           title: 'Contas e Cartões'
