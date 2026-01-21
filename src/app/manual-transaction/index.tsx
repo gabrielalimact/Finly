@@ -25,9 +25,53 @@ export default function ManualTransactionScreen() {
   const router = useRouter()
   const params = useLocalSearchParams()
   
+  // Funções de formatação de data
+  const formatDateToBR = (date: Date): string => {
+    const day = String(date.getDate()).padStart(2, '0')
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const year = date.getFullYear()
+    return `${day}/${month}/${year}`
+  }
+
+  const formatDateToISO = (dateBR: string): string => {
+    if (!dateBR || dateBR.length !== 10) return ''
+    
+    const parts = dateBR.split('/')
+    if (parts.length !== 3) return ''
+    
+    const [day, month, year] = parts
+    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
+  }
+
+  const formatDateInput = (text: string): string => {
+    // Remove tudo que não é número
+    const numbers = text.replace(/\D/g, '')
+    
+    // Formatar progressivamente
+    if (numbers.length <= 2) return numbers
+    if (numbers.length <= 4) return `${numbers.slice(0, 2)}/${numbers.slice(2)}`
+    return `${numbers.slice(0, 2)}/${numbers.slice(2, 4)}/${numbers.slice(4, 8)}`
+  }
+
+  const isValidDate = (dateBR: string): boolean => {
+    if (dateBR.length !== 10) return false
+    
+    const parts = dateBR.split('/')
+    if (parts.length !== 3) return false
+    
+    const [day, month, year] = parts.map(Number)
+    if (isNaN(day) || isNaN(month) || isNaN(year)) return false
+    
+    const date = new Date(year, month - 1, day)
+    return date.getDate() === day && 
+           date.getMonth() === month - 1 && 
+           date.getFullYear() === year
+  }
+  
   // Estados do formulário
   const [transferDescription, setTransferDescription] = useState('')
   const [transferAmount, setTransferAmount] = useState('')
+  const [dataTransacao, setDataTransacao] = useState(formatDateToBR(new Date()))
   const [transferType, setTransferType] = useState<'receita' | 'despesa'>('despesa')
   const [contas, setContas] = useState<IConta[]>([])
   const [selectedConta, setSelectedConta] = useState<IConta | null>(null)
@@ -105,7 +149,8 @@ export default function ManualTransactionScreen() {
         setTransferDescription(transaction.descricao)
         setTransferAmount(formatCurrency((transaction.valor * 100).toString()))
         setTransferType(transaction.tipo as 'receita' | 'despesa')
-        
+        setDataTransacao(formatDateToBR(new Date(transaction.dataTransacao)))
+
         // Encontrar e selecionar conta
         const contaEncontrada = contas.find(conta => conta.id === transaction.conta.id)
         if (contaEncontrada) {
@@ -128,6 +173,7 @@ export default function ManualTransactionScreen() {
       // Pré-preencher com dados da IA
       if (params.description) setTransferDescription(params.description as string)
       if (params.amount) setTransferAmount(formatCurrency((parseFloat(params.amount as string) * 100).toString()))
+      if (params.date) setDataTransacao(formatDateToBR(new Date(params.date as string)))
       if (params.type) setTransferType(params.type as 'receita' | 'despesa')
       
       // Selecionar conta
@@ -162,14 +208,23 @@ export default function ManualTransactionScreen() {
   }, [contas, categorias, dataLoaded])
 
   const handleSave = async () => {
+    console.log('DEBUG - Data original:', dataTransacao)
+    console.log('DEBUG - Data formatada para ISO:', formatDateToISO(dataTransacao))
     console.log('Dados da transação:', {
       descricao: transferDescription,
       valor: parseAmount(transferAmount),
       tipo: transferType,
       contaId: selectedConta?.id || 0,
       categoriaId: selectedCategoria?.id || undefined,
+      dataTransacao: formatDateToISO(dataTransacao),
     })
     try {
+      // Validação básica
+      if (!isValidDate(dataTransacao)) {
+        Alert.alert('Erro de Validação', 'Data inválida. Use o formato DD/MM/AAAA')
+        return
+      }
+      
       // Validação
       const errors = validateTransacao({
         descricao: transferDescription,
@@ -177,6 +232,7 @@ export default function ManualTransactionScreen() {
         tipo: transferType,
         contaId: selectedConta?.id || 0,
         categoriaId: selectedCategoria?.id || undefined,
+        dataTransacao: formatDateToISO(dataTransacao),
       })
 
       if (errors.length > 0) {
@@ -192,6 +248,7 @@ export default function ManualTransactionScreen() {
         tipo: transferType,
         contaId: selectedConta!.id!,
         categoriaId: selectedCategoria?.id || undefined,
+        dataTransacao: formatDateToISO(dataTransacao),
       }
 
       if (isEditMode && params.transactionId) {
@@ -230,6 +287,17 @@ export default function ManualTransactionScreen() {
     router.dismiss()
   }
 
+  const handleDeleteTransaction = async () => {
+    if (!params.transactionId) return
+
+    try {
+      await transacoesAPI.delete(params.transactionId as string)
+      router.dismiss()
+    } catch (error: any) {
+      Alert.alert('Erro', error.message || 'Erro ao deletar transação')
+    }
+  }
+
   const getScreenTitle = () => {
     if (isEditMode) return 'Editar Transação'
     if (isFromIA) return 'Revisar Transação da IA'
@@ -249,7 +317,9 @@ export default function ManualTransactionScreen() {
             <Ionicons name="arrow-back" size={24} color={Colors.light.black} />
           </TouchableOpacity>
           <Text style={styles.title}>{getScreenTitle()}</Text>
-          <View style={{ width: 24 }} />
+          {isEditMode ?  <TouchableOpacity onPress={handleDeleteTransaction} style={styles.backButton}>
+            <Ionicons name="trash" size={22} color={Colors.light.darkRed} />
+          </TouchableOpacity> : <View style={{ width: 24 }} />}
         </View>
 
         <View style={styles.content}>
@@ -275,6 +345,20 @@ export default function ManualTransactionScreen() {
               placeholder="R$ 0,00"
               placeholderTextColor={Colors.light.textSecondary}
               keyboardType="numeric"
+            />
+          </View>
+
+          {/* Data */}
+          <View style={styles.inputContainer}>
+            <Text style={styles.inputLabel}>Data</Text>
+            <TextInput
+              style={styles.textInput}
+              value={dataTransacao}
+              onChangeText={(text) => setDataTransacao(formatDateInput(text))}
+              placeholder="DD/MM/AAAA"
+              placeholderTextColor={Colors.light.textSecondary}
+              keyboardType="numeric"
+              maxLength={10}
             />
           </View>
 
@@ -485,9 +569,6 @@ export default function ManualTransactionScreen() {
                       </View>
                       <View style={styles.modalListItemContent}>
                         <Text style={styles.modalListItemTitle}>{conta.nome}</Text>
-                        <Text style={styles.modalListItemSubtitle}>
-                          Saldo: R$ {conta.saldo?.toFixed(2) || '0.00'}
-                        </Text>
                       </View>
                       {selectedConta?.id === conta.id && (
                         <Ionicons name="checkmark" size={20} color={Colors.light.green} />
@@ -760,7 +841,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.bgWhite,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    maxHeight: '70%',
+    minHeight: '50%',
   },
   modalHeader: {
     flexDirection: 'row',
