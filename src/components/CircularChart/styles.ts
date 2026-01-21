@@ -3,7 +3,6 @@ import { StyleSheet } from 'react-native';
 export const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    width: '100%',
   },
   chartContainer: {
     marginTop: 20,
@@ -26,8 +25,8 @@ export const styles = StyleSheet.create({
   },
   legend: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
     marginTop: 20,
     paddingHorizontal: 20,
   },
