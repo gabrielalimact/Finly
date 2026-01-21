@@ -1,15 +1,20 @@
+import { BarChart, BarChartData } from '@/components/BarChart';
+import { CategoryChart } from '@/components/CategoryChart';
 import { CircularChart } from '@/components/CircularChart';
 import { MonthsList } from '@/components/MonthsList';
+import Spinner from '@/components/Spinner';
 import { TextStyled } from '@/components/TextStyled';
 import { Colors } from '@/constants/Colors';
 import { useUserContext } from '@/contexts';
 import { contasAPI, getCorFromConta, getInitialsFromConta, IConta } from '@/services/contas-service';
+import { IEvolucaoMensal, relatorioService } from '@/services/relatorio-service';
 import { ITransacao, transacoesAPI } from '@/services/transacoes-service';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
   FlatList,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
@@ -27,6 +32,11 @@ export default function HomeScreen() {
   const [loadingContas, setLoadingContas] = useState(false)
   const [transacoes, setTransacoes] = useState<ITransacao[]>([])
   const [loadingTransacoes, setLoadingTransacoes] = useState(false)
+  const [dadosMensais, setDadosMensais] = useState<IEvolucaoMensal[]>([])
+  const [loadingDados, setLoadingDados] = useState(false)
+  const [refreshing, setRefreshing] = useState(false)
+  const [categoriasData, setCategoriasData] = useState<any[]>([])
+  const [loadingCategorias, setLoadingCategorias] = useState(false)
 
   const toggleMenu = () => {
     setEyeOpen(!eyeOpen)
@@ -39,7 +49,6 @@ export default function HomeScreen() {
       setContas(contasData)
     } catch (error) {
       console.error('Erro ao carregar contas:', error)
-      // Em caso de erro, usar dados mockados vazios
       setContas([])
     } finally {
       setLoadingContas(false)
@@ -53,38 +62,130 @@ export default function HomeScreen() {
       setTransacoes(transacoesData)
     } catch (error) {
       console.error('Erro ao carregar transações:', error)
-      // Em caso de erro, usar dados mockados vazios
       setTransacoes([])
     } finally {
       setLoadingTransacoes(false)
     }
   }
 
+  const loadDadosMensais = async () => {
+    try {
+      setLoadingDados(true)
+      
+      // Carregar todos os dados do ano para mostrar no gráfico de barras
+      const dataInicio = new Date(2026, 0, 1).toISOString().split('T')[0] // 1º de janeiro de 2026
+      const dataFim = new Date(2026, 11, 31).toISOString().split('T')[0] // 31 de dezembro de 2026
+      
+      const dadosFiltros = {
+        dataInicio,
+        dataFim
+      }
+      
+      console.log('Carregando dados mensais com filtros:', dadosFiltros)
+      const evolucaoMensal = await relatorioService.obterEvolucaoMensal(dadosFiltros)
+      
+      console.log('Dados recebidos:', evolucaoMensal)
+      setDadosMensais(evolucaoMensal)
+    } catch (error) {
+      console.error('Erro ao carregar dados mensais:', error)
+      setDadosMensais([])
+    } finally {
+      setLoadingDados(false)
+    }
+  }
+
+  const loadCategoriasData = async (mesEspecifico?: number) => {
+    try {
+      setLoadingCategorias(true)
+      
+      // Primeiro, tenta carregar dados do mês específico
+      let dadosFiltros = undefined
+      if (mesEspecifico !== undefined) {
+        const ano = 2026 // Ano fixo conforme definido no MonthsList
+        
+        // Criar filtros para o mês específico
+        const dataInicio = new Date(ano, mesEspecifico, 1).toISOString().split('T')[0]
+        const dataFim = new Date(ano, mesEspecifico + 1, 0).toISOString().split('T')[0]
+        
+        dadosFiltros = {
+          dataInicio,
+          dataFim,
+          tipo: 'despesa' as 'despesa'
+        }
+      }
+      
+      console.log('Carregando dados de categorias com filtros:', dadosFiltros)
+      const categorias = await relatorioService.obterRelatorioCategorias(dadosFiltros)
+      
+      if (categorias.length === 0 && dadosFiltros) {
+        const categoriasAno = await relatorioService.obterRelatorioCategorias({
+          dataInicio: new Date(2026, 0, 1).toISOString().split('T')[0],
+          dataFim: new Date(2026, 11, 31).toISOString().split('T')[0],
+          tipo: 'despesa' as 'despesa'
+        })
+        setCategoriasData(categoriasAno)
+      } else {
+        setCategoriasData(categorias)
+      }
+    } catch (error) {
+      setCategoriasData([])
+    } finally {
+      setLoadingCategorias(false)
+    }
+  }
+
   useEffect(() => {
     loadContas()
     loadTransacoes()
+    loadDadosMensais()
+    loadCategoriasData()
   }, [])
 
-  // Dados mockados por mês (Janeiro = 0, Dezembro = 11)
-  const monthlyData = {
-    0: { income: 4200, expenses: 2800 }, // Janeiro
-    1: { income: 3800, expenses: 3200 }, // Fevereiro
-    2: { income: 4500, expenses: 2900 }, // Março
-    3: { income: 4000, expenses: 3100 }, // Abril
-    4: { income: 5000, expenses: 3000 }, // Maio (dados atuais)
-    5: { income: 4300, expenses: 2700 }, // Junho
-    6: { income: 4600, expenses: 3400 }, // Julho
-    7: { income: 4100, expenses: 2600 }, // Agosto
-    8: { income: 4700, expenses: 3200 }, // Setembro
-    9: { income: 4400, expenses: 2900 }, // Outubro
-    10: { income: 4800, expenses: 3100 }, // Novembro
-    11: { income: 5200, expenses: 3500 }, // Dezembro
+  useEffect(() => {
+    loadCategoriasData(selectedMonth)
+  }, [selectedMonth])
+
+  const handleRefresh = async () => {
+    setRefreshing(true)
+    try {
+      await Promise.all([
+        loadContas(),
+        loadTransacoes(),
+        loadDadosMensais(),
+        loadCategoriasData(selectedMonth)
+      ])
+    } catch (error) {
+      console.error('Erro ao atualizar dados:', error)
+    } finally {
+      setRefreshing(false)
+    }
   }
 
-  const currentMonthData = monthlyData[selectedMonth as keyof typeof monthlyData] || monthlyData[4]
+  const getCurrentMonthData = () => {
+    const dadosMes = dadosMensais.find(dado => dado.mes === selectedMonth + 1)
+    return {
+      income: dadosMes?.totalReceitas || 0,
+      expenses: dadosMes?.totalDespesas || 0,
+      saldoLiquido: dadosMes?.saldoLiquido || 0
+    }
+  }
+
+  const prepareBarChartData = (): BarChartData[] => {
+    return dadosMensais.map(dado => ({
+      label: `${String(dado.mes).padStart(2, '0')}/${dado.ano}`,
+      income: dado.totalReceitas,
+      expenses: dado.totalDespesas,
+      month: dado.mes,
+      year: dado.ano
+    }))
+  }
+
+  const currentMonthData = getCurrentMonthData()
+  const barChartData = prepareBarChartData()
 
   const handleMonthChange = (month: number) => {
     setSelectedMonth(month)
+    // As categorias serão atualizadas automaticamente pelo useEffect
   }
 
   const formatCurrency = (value: number) => {
@@ -145,13 +246,27 @@ export default function HomeScreen() {
   const handleAddTransaction = () => {
     router.push('/new-transactions-ia')
   }
-  useEffect(() => {
-    setSelectedMonth(new Date().getMonth())
-  }, [])
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      {(loadingContas || loadingDados || loadingTransacoes) ? (<View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: 10,
+        }}
+      ><Spinner /></View>): (<ScrollView 
+        contentContainerStyle={styles.scrollContent}
+        refreshControl={
+          <RefreshControl 
+            refreshing={refreshing} 
+            onRefresh={handleRefresh}
+            colors={[Colors.light.green]}
+            tintColor={Colors.light.green}
+          />
+        }
+      >
         <View style={styles.topBar}>
           <View style={styles.userInfosView}>
             <TextStyled text="Olá," type='subtitle' color={Colors.light.textSecondary} />
@@ -176,18 +291,7 @@ export default function HomeScreen() {
             </TouchableOpacity>
           </View>
         </View>
-
-        <MonthsList year={2026} onMonthChange={handleMonthChange} />
-        <View style={styles.content}>
-          <CircularChart
-            income={currentMonthData.income}
-            expenses={currentMonthData.expenses}
-            hideValues={!eyeOpen}
-            selectedMonth={selectedMonth}
-          />
-        </View>
-        
-        <TouchableOpacity 
+              <TouchableOpacity 
           style={styles.addTransactionButton} 
           onPress={handleAddTransaction}
         >
@@ -197,6 +301,35 @@ export default function HomeScreen() {
           <Text style={styles.addTransactionText}>Adicionar transação</Text>
           <Ionicons name="arrow-forward" size={18} color={Colors.light.green} />
         </TouchableOpacity>
+        <MonthsList year={2026} onMonthChange={handleMonthChange} />
+
+        <View style={styles.content}>
+          <CircularChart
+            income={currentMonthData.income}
+            expenses={currentMonthData.expenses}
+            hideValues={!eyeOpen}
+            selectedMonth={selectedMonth}
+          />
+        </View>
+
+        {/* Gráfico de Evolução Mensal */}
+        <BarChart
+          data={barChartData}
+          hideValues={!eyeOpen}
+          onBarPress={(data) => {
+            console.log('Bar pressed:', data)
+            setSelectedMonth(data.month - 1)
+          }}
+        />
+
+        {/* Gráfico de Categorias */}
+        <CategoryChart
+          data={categoriasData}
+          hideValues={!eyeOpen}
+          title="Gastos por Categoria"
+        />
+        
+
 
         {/* Seção de Contas */}
         <View style={styles.section}>
@@ -232,7 +365,7 @@ export default function HomeScreen() {
             ListEmptyComponent={<Text style={styles.emptyListText}>Nenhuma transação encontrada.</Text>}
           />
         </View>
-      </ScrollView>
+      </ScrollView>)}
     </SafeAreaView>
   )
 }
@@ -248,7 +381,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     padding: 20,
-    paddingBottom: 140, // Espaço extra para a bottom bar
+    paddingBottom: 140,
   },
   topBar: {
     flexDirection: 'row',
@@ -453,6 +586,59 @@ const styles = StyleSheet.create({
   emptyListText: {
     fontSize: 16,
     fontFamily: 'Montserrat-Regular',
+    color: Colors.light.textSecondary,
+  },
+  // Estilos do resumo financeiro
+  resumoFinanceiro: {
+    marginBottom: 25,
+  },
+  resumoCard: {
+    backgroundColor: Colors.light.bgWhite,
+    borderRadius: 16,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: Colors.light.border,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  resumoItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  resumoIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: Colors.light.bgPrimary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  resumoTexto: {
+    flex: 1,
+  },
+  resumoLabel: {
+    fontSize: 14,
+    fontFamily: 'Montserrat-Medium',
+    color: Colors.light.textSecondary,
+    marginBottom: 2,
+  },
+  resumoValor: {
+    fontSize: 16,
+    fontFamily: 'Montserrat-Bold',
+  },
+  loadingText: {
+    textAlign: 'center',
+    marginTop: 12,
+    fontSize: 14,
+    fontFamily: 'Montserrat-Medium',
     color: Colors.light.textSecondary,
   },
 });
