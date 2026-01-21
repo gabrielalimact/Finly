@@ -38,6 +38,7 @@ export interface ICreateTransacao {
   quantidadeParcelas?: number
   contaId: number
   categoriaId?: number
+  dataTransacao: string
 }
 
 export interface ICreateTransacaoIA {
@@ -51,6 +52,7 @@ export interface IUpdateTransacao {
   tipo?: 'receita' | 'despesa'
   contaId?: number
   categoriaId?: number
+  dataTransacao?: string
 }
 
 export interface ICreateCategoria {
